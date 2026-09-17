@@ -19,3 +19,16 @@ tiebreak = "points_for"
 # edits, set auto_publish = true to commit recaps straight to main instead.
 auto_publish = false
 model = "claude-opus-5"
+
+[purse]
+# The commissioner tracks the top scores every week and pays them out at the end of
+# the season. Ties at the cut are all paid: two teams tied for 4th means five in the
+# money that week.
+places = 4
+note = "Paid out at the end of the season"
+currency = "$"
+# Per week, from the commissioner's 2024 payout sheet: 16 weeks x $75 came to $1,200.
+place_1 = 40
+place_2 = 20
+place_3 = 10
+place_4 = 5

@@ -484,6 +484,44 @@
    "closest_margin_of_week": true
   }
  ],
+ "in_the_money_this_week": {
+  "how_it_works": "The commissioner pays the top 4 scores each week, $40 for 1st, $20 for 2nd, $10 for 3rd, $5 for 4th, at the end of the season.",
+  "currency": "$",
+  "paid": [
+   {
+    "place": 1,
+    "team": "sisu",
+    "points": 193.02,
+    "wins": 40.0,
+    "tied_at_this_place": false,
+    "weeks_in_the_money_so_far": 1
+   },
+   {
+    "place": 2,
+    "team": "densmen",
+    "points": 145.56,
+    "wins": 20.0,
+    "tied_at_this_place": false,
+    "weeks_in_the_money_so_far": 1
+   },
+   {
+    "place": 3,
+    "team": "Jrod",
+    "points": 142.18,
+    "wins": 10.0,
+    "tied_at_this_place": false,
+    "weeks_in_the_money_so_far": 1
+   },
+   {
+    "place": 4,
+    "team": "Norskes U Betcha",
+    "points": 127.1,
+    "wins": 5.0,
+    "tied_at_this_place": false,
+    "weeks_in_the_money_so_far": 1
+   }
+  ]
+ },
  "stat_of_the_week": {
   "stat": "Points Over Expected",
   "what_it_measures": "Actual fantasy points minus what a player's volume should have produced, scored with Life's Gr8's own settings. High means efficient, or lucky. Low means due.",

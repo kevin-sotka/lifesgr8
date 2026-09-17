@@ -115,7 +115,9 @@
     });
     out.appendChild(stories);
 
-    /* --- the stat of the week --------------------------------------------- */
+    /* --- the purse and the stat of the week -------------------------------- */
+    var pc = V.purseCard();
+    if (pc) out.appendChild(pc);
     var na = LG.data.newage;
     if (na && na.headline && na.boards[na.headline]) out.appendChild(V.statOfWeek(na));
 
@@ -299,6 +301,44 @@
     return out;
   };
 
+  /* ============================================================ PURSE ===
+     The commissioner pays the weekly high scores at the end of the season, so the
+     board is cumulative: this week's money on The Card, the running tally and the
+     week by week log on Standings. */
+  V.purseOrdinal = function (place) { return LG.ord(place); };
+
+  V.money = function (amount) {
+    var p = LG.data.season.purse;
+    return (p.currency || "$") + LG.fmt(amount, amount % 1 ? 2 : 0);
+  };
+
+  V.purseWeek = function (paid, compact) {
+    var list = el("ol.purse-list");
+    paid.forEach(function (p) {
+      list.appendChild(el("li",
+        el("span.purse-place.num", { text: V.purseOrdinal(p.place) + (p.tied ? "=" : "") }),
+        el("span.purse-team", null, LG.teamName(p.team_index, compact ? undefined : "full")),
+        el("span.purse-pts.num", { text: LG.fmt(p.points, 2) }),
+        el("span.purse-money.num", { text: V.money(p.amount) })));
+    });
+    return list;
+  };
+
+  V.purseCard = function () {
+    var purse = LG.data.season.purse;
+    if (!purse || !purse.weeks.length) return null;
+    var latest = purse.weeks[0];
+    var card = LG.card("In the money, Week " + latest.week, {
+      eyebrow: "The Purse", flush: true,
+      sub: "Top " + purse.places + " scores every week, worth "
+         + purse.amounts.map(V.money).join(", ") + ". The commissioner pays it out at the "
+         + "end of the season.",
+      aside: el("a.chip", { href: "#/standings", text: "Season tally" })
+    });
+    card.body.appendChild(el("div", { style: "padding:0 16px" }, V.purseWeek(latest.paid, true)));
+    return card;
+  };
+
   /* ========================================================= NEW-AGE ===
      One modern stat headlines each week and the four rotate. Every value and rank
      arrives computed; these functions only format and lay it out. */
@@ -449,6 +489,45 @@
       { color: "var(--div-neg)", label: "Fewer wins than the scoring earned" }
     ]));
     out.appendChild(luck);
+
+    /* --- the purse -------------------------------------------------------- */
+    var purse = LG.data.standings.purse || LG.data.season.purse;
+    if (purse && purse.weeks.length) {
+      var pc = LG.card("The Purse", {
+        eyebrow: "Weekly high scores", flush: true,
+        sub: "The commissioner tracks the top " + purse.places + " scores every week: "
+           + purse.amounts.map(function (a, i) { return V.purseOrdinal(i + 1) + " " + V.money(a); }).join(", ")
+           + ". Paid out at the end of the season. A tie at the cut pays everyone tied. "
+           + V.money(purse.paid_so_far) + " claimed so far."
+      });
+      pc.body.appendChild(LG.table([
+        { key: "rk", label: "#", sort: false, cls: "rk", cell: function (r, i) { return i + 1; } },
+        { key: "team", label: "Team", sort: false, cell: function (r) { return LG.teamName(r.team_index); } },
+        { key: "weeks_in_the_money", label: "In the money",
+          cell: function (r) { return r.weeks_in_the_money; } },
+        { key: "first", label: "1st", value: function (r) { return r.places[0]; },
+          cell: function (r) { return r.places[0] || "\u2013"; } },
+        { key: "second", label: "2nd", value: function (r) { return r.places[1]; },
+          cell: function (r) { return r.places[1] || "\u2013"; } },
+        { key: "third", label: "3rd", value: function (r) { return r.places[2]; },
+          cell: function (r) { return r.places[2] || "\u2013"; } },
+        { key: "fourth", label: "4th", value: function (r) { return r.places[3]; },
+          cell: function (r) { return r.places[3] || "\u2013"; } },
+        { key: "points", label: "Points in the money",
+          cell: function (r) { return LG.fmt(r.points, 1); } },
+        { key: "money", label: "Won", cell: function (r) { return V.money(r.money); } }
+      ], purse.tally.filter(function (r) { return r.weeks_in_the_money > 0; }),
+         { sort: "money" }));
+
+      var log = el("div.purse-log");
+      purse.weeks.forEach(function (w) {
+        log.appendChild(el("div.purse-week",
+          el("div.day-head", { text: "Week " + w.week }),
+          V.purseWeek(w.paid)));
+      });
+      pc.body.appendChild(log);
+      out.appendChild(pc);
+    }
 
     /* --- power rankings -------------------------------------------------- */
     var pw = LG.card("Power rankings", {
@@ -678,6 +757,7 @@
     });
     var body = el("div.recap-body", el("p.lede", { text: r.lede }));
     r.paragraphs.forEach(function (p) { body.appendChild(el("p", { text: p })); });
+    if (r.purse) body.appendChild(el("p.recap-purse", { text: r.purse }));
     if (r.sign_off) body.appendChild(el("p.recap-signoff", { text: r.sign_off }));
     card.body.appendChild(body);
     card.body.appendChild(el("p.sub", { style: "margin-top:18px",

@@ -344,15 +344,18 @@ def cmd_recap(args: argparse.Namespace) -> int:
     from . import recap, snapshot
     league_key = _current_league_key()
     conn = snapshot.connect()
-    newage_path = ROOT / "site" / "static" / "data" / "newage.json"
+    data_dir = ROOT / "site" / "static" / "data"
+    newage_path, season_path = data_dir / "newage.json", data_dir / "season.json"
     newage = json.loads(newage_path.read_text()) if newage_path.exists() else None
+    purse = (json.loads(season_path.read_text()).get("purse") if season_path.exists() else None)
     if args.facts:
         from .compute import Season
         week = args.week or Season(conn, league_key).completed_week
-        print(json.dumps(recap.facts(conn, league_key, week, newage), indent=1))
+        print(json.dumps(recap.facts(conn, league_key, week, newage, purse), indent=1))
         return 0
     try:
-        path = recap.generate(conn, league_key, week=args.week, newage=newage, force=args.force)
+        path = recap.generate(conn, league_key, week=args.week, newage=newage, purse=purse,
+                              force=args.force)
     except Exception as exc:
         print("recap failed: %s" % exc, file=sys.stderr)
         return 1

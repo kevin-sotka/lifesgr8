@@ -114,6 +114,11 @@ GitHub only when upstream changes (`./fantasy-api nflverse`, also part of
 `daily`). Four stats rotate one a week, defined in `stats.toml`. If nflverse is
 unreachable the site still builds; the headline uses the last files on disk.
 
+**The Purse** is the commissioner's weekly high scores, which he pays out at the end
+of the season. The top four each week are worth $40, $20, $10 and $5, set in
+`league.toml`. This week's four show on The Card, the running tally and the week by
+week log live on Standings, and Doc names them in every recap.
+
 **Rules Yahoo does not carry** (the commissioner runs matchups and the playoff
 tree by hand) live in `league.toml`. It currently says top 8 make a winners
 bracket in weeks 14 to 17. Replace it when the real rules arrive.

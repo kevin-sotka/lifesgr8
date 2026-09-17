@@ -29,7 +29,10 @@ def good_draft():
             "lede": "Hold up there. sisu hung %s on the board and nobody else came close."
                     % FACTS["week_high"]["points"],
             "paragraphs": paras,
-            "sign_off": "Saddle up, pardners. Same time next week."}
+            "sign_off": "Saddle up, pardners. Same time next week.",
+            "purse": "In the money: " + ", ".join(
+                "%s at %s" % (p["team"], p["points"])
+                for p in FACTS["in_the_money_this_week"]["paid"]) + "."}
 
 
 class FakeClient:
@@ -58,7 +61,10 @@ class Checks(unittest.TestCase):
 
     def test_numbers_must_belong_to_the_matchup_being_written_about(self):
         d = good_draft()
-        other = FACTS["matchups"][5]["winner"]["points"]        # a real score, wrong game
+        # A real score from another game that the week-wide facts do not also carry.
+        allowed = recap.allowed_numbers({k: v for k, v in FACTS.items() if k != "matchups"})
+        other = next(m["loser"]["points"] for m in FACTS["matchups"][1:]
+                     if recap._norm(m["loser"]["points"]) not in allowed)
         d["paragraphs"][0] += " They even hung %s on the board somehow." % other
         problems = recap.check(d, FACTS, MANAGERS)
         self.assertTrue(any("do not belong to it" in p for p in problems), problems)
@@ -108,6 +114,15 @@ class Checks(unittest.TestCase):
         loser = FACTS["matchups"][2]["loser"]["team"]
         d["paragraphs"][2] = d["paragraphs"][2].replace(loser, "the other fellas")
         self.assertTrue(any(loser in p for p in recap.check(d, FACTS, MANAGERS)))
+
+    def test_the_purse_line_must_name_every_team_in_the_money(self):
+        paid = FACTS["in_the_money_this_week"]["paid"]
+        d = good_draft()
+        d["purse"] = "In the money: " + ", ".join(p["team"] for p in paid) + "."
+        self.assertEqual([p for p in recap.check(d, FACTS, MANAGERS) if "purse" in p], [])
+        d["purse"] = "In the money: " + ", ".join(p["team"] for p in paid[:-1]) + "."
+        problems = recap.check(d, FACTS, MANAGERS)
+        self.assertTrue(any(paid[-1]["team"] in p for p in problems), problems)
 
     def test_manager_names_are_rejected_unless_they_are_team_names(self):
         d = good_draft()

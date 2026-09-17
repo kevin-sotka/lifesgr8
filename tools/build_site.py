@@ -198,6 +198,25 @@ def validate():
                           "race %s put %s off the track at position %s"
                           % (race.get("id"), run.get("team_index"), p))
 
+        if "season" in payload and payload["season"].get("purse"):
+            purse = payload["season"]["purse"]
+            for wk in purse["weeks"]:
+                check(len(wk["paid"]) >= purse["places"],
+                      "week %s pays %d places, expected at least %d"
+                      % (wk["week"], len(wk["paid"]), purse["places"]))
+                for p in wk["paid"]:
+                    check(0 <= p["team_index"] < n, "the purse credits an unknown team")
+                    check(1 <= p["place"] <= purse["places"],
+                          "the purse has a place outside 1 to %d" % purse["places"])
+            weeks_paid = sum(len(wk["paid"]) for wk in purse["weeks"])
+            check(sum(r["weeks_in_the_money"] for r in purse["tally"]) == weeks_paid,
+                  "the purse tally does not match the weekly rows")
+            money = sum(p["amount"] for wk in purse["weeks"] for p in wk["paid"])
+            check(abs(sum(r["money"] for r in purse["tally"]) - money) < 0.01,
+                  "the purse winnings do not match what the weeks paid")
+            check(abs(purse["paid_so_far"] - money) < 0.01,
+                  "the purse total does not match what the weeks paid")
+
         if "newage" in payload and payload["newage"].get("headline"):
             na = payload["newage"]
             check(na["headline"] in na.get("boards", {}), "headline stat has no board")

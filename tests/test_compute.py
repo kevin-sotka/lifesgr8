@@ -203,6 +203,49 @@ class Jockeys(unittest.TestCase):
         self.assertEqual(j["more"], 1)
 
 
+class Purse(unittest.TestCase):
+    """The commissioner's weekly high scores, paid out at the end of the season."""
+
+    class FakeSeason:
+        def __init__(self, weekly_scores):
+            self.n = len(weekly_scores[0])
+            self.completed = list(range(1, len(weekly_scores) + 1))
+            self._scores = weekly_scores
+
+        def team_points(self, week):
+            return dict(enumerate(self._scores[week - 1]))
+
+    def test_top_four_by_score(self):
+        p = compute.purse(self.FakeSeason([[100.0, 90.0, 80.0, 70.0, 60.0, 50.0]]), 4)
+        self.assertEqual([(x["place"], x["team_index"], x["points"]) for x in p["weeks"][0]["paid"]],
+                         [(1, 0, 100.0), (2, 1, 90.0), (3, 2, 80.0), (4, 3, 70.0)])
+
+    def test_a_tie_at_the_cut_pays_everyone_tied(self):
+        p = compute.purse(self.FakeSeason([[100.0, 90.0, 80.0, 70.0, 70.0, 50.0]]), 4)
+        paid = p["weeks"][0]["paid"]
+        self.assertEqual(len(paid), 5)
+        self.assertEqual([x["place"] for x in paid], [1, 2, 3, 4, 4])
+        self.assertTrue(all(x["tied"] for x in paid if x["place"] == 4))
+
+    def test_a_tie_above_the_cut_consumes_the_place_below(self):
+        # Two teams tied for 1st means places 1, 1, 3, 4: nobody finishes 2nd.
+        p = compute.purse(self.FakeSeason([[100.0, 100.0, 80.0, 70.0, 60.0, 50.0]]), 4)
+        self.assertEqual([x["place"] for x in p["weeks"][0]["paid"]], [1, 1, 3, 4])
+
+    def test_tally_counts_each_place_and_newest_week_first(self):
+        season = self.FakeSeason([[100.0, 90.0, 80.0, 70.0, 60.0, 50.0],
+                                  [50.0, 95.0, 85.0, 75.0, 65.0, 120.0]])
+        p = compute.purse(season, 4)
+        self.assertEqual([w["week"] for w in p["weeks"]], [2, 1])
+        by_team = {r["team_index"]: r for r in p["tally"]}
+        self.assertEqual(by_team[0]["places"], [1, 0, 0, 0])      # 1st once, then missed out
+        self.assertEqual(by_team[0]["weeks_in_the_money"], 1)
+        self.assertEqual(by_team[1]["places"], [0, 2, 0, 0])      # 2nd both weeks
+        self.assertEqual(by_team[5]["places"], [1, 0, 0, 0])      # won week 2 only
+        self.assertEqual(by_team[4]["weeks_in_the_money"], 0)
+        self.assertEqual(by_team[1]["points"], 185.0)
+
+
 class CorrectionWindow(unittest.TestCase):
     def test_a_finished_week_is_not_final_until_corrections_are_in(self):
         from datetime import date

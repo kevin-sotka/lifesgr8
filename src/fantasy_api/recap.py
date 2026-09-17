@@ -37,7 +37,8 @@ VOICE_FILE = ROOT / "docs" / "doc_voice.md"
 # =============================================================================
 
 def facts(conn: sqlite3.Connection, league_key: str, week: int,
-          newage: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+          newage: Optional[Dict[str, Any]] = None,
+          purse: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     season = Season(conn, league_key)
     if week not in season.completed:
         raise ValueError("Week %d is not complete yet" % week)
@@ -131,6 +132,24 @@ def facts(conn: sqlite3.Connection, league_key: str, week: int,
         "unbeaten_teams": unbeaten, "winless_teams": winless,
         "matchups": matchups,
     }
+    if purse:
+        this_week = next((w for w in purse["weeks"] if w["week"] == week), None)
+        if this_week:
+            counts = {r["team_index"]: r for r in purse["tally"]}
+            out["in_the_money_this_week"] = {
+                "how_it_works": "The commissioner pays the top %d scores each week, %s, at the "
+                                "end of the season."
+                                % (purse["places"],
+                                   ", ".join("%s%g for %s" % (purse.get("currency", "$"), a, n)
+                                             for a, n in zip(purse["amounts"],
+                                                             ("1st", "2nd", "3rd", "4th")))),
+                "currency": purse.get("currency", "$"),
+                "paid": [{"place": p["place"], "team": name(p["team_index"]),
+                          "points": p["points"], "wins": p["amount"],
+                          "tied_at_this_place": p["tied"],
+                          "weeks_in_the_money_so_far": counts[p["team_index"]]["weeks_in_the_money"]}
+                         for p in this_week["paid"]],
+            }
     if newage and newage.get("headline_fact") and newage.get("week") == week:
         board = newage["boards"][newage["headline"]]
         lead = board["leaders"][0]
@@ -175,6 +194,9 @@ facts carry it.
 6. Stay in character. Never mention AI, prompts, models, data feeds, or how the recap was made.
 7. "paragraphs" holds exactly one paragraph per matchup, in the order given, two to four \
 sentences each, naming both teams. Put nothing else in that list.
+7b. "purse" is one or two sentences on the teams in the money this week, from \
+"in_the_money_this_week". Name every team on that list, in order, and say what each \
+scored. This is the commissioner's payout, so it is worth a little ceremony.
 8. "sign_off" is for a closing line to the league, one or two sentences. Leave it as an \
 empty string if the week does not want one. Any parting words go here, never in "paragraphs".
 9. Headline: one line, under fourteen words. Lede: two or three sentences on the week as a \
@@ -207,9 +229,13 @@ def schema_for(fact: Dict[str, Any]) -> Dict[str, Any]:
             "lede": {"type": "string", "description": "Two or three sentences on the week."},
             "sign_off": {"type": "string",
                          "description": "A closing line to the league, or an empty string."},
+            "purse": {"type": "string",
+                      "description": "One or two sentences naming every team in the money this "
+                                     "week, in order, with what each scored. Empty string if "
+                                     "the facts carry no purse."},
             **games,
         },
-        "required": ["headline", "lede", "sign_off"] + list(games),
+        "required": ["headline", "lede", "sign_off", "purse"] + list(games),
         "additionalProperties": False,
     }
 
@@ -220,7 +246,7 @@ def normalize(payload: Dict[str, Any], matchups: int) -> Dict[str, Any]:
         return payload
     return {
         "headline": payload["headline"], "lede": payload["lede"],
-        "sign_off": payload.get("sign_off", ""),
+        "sign_off": payload.get("sign_off", ""), "purse": payload.get("purse", ""),
         "paragraphs": [payload.get("game_%d" % n, "") for n in range(1, matchups + 1)],
     }
 
@@ -300,8 +326,8 @@ def _norm(x: float) -> str:
 
 def check(draft: Dict[str, Any], fact: Dict[str, Any], forbidden_names: List[str]) -> List[str]:
     problems = []
-    text_parts = ([draft.get("headline", ""), draft.get("lede", ""), draft.get("sign_off", "")]
-                  + list(draft.get("paragraphs", [])))
+    text_parts = ([draft.get("headline", ""), draft.get("lede", ""), draft.get("sign_off", ""),
+                   draft.get("purse", "")] + list(draft.get("paragraphs", [])))
     text = "\n".join(text_parts)
     if "—" in text or "–" in text:
         problems.append("It uses an em dash or en dash. Use commas, periods, or colons.")
@@ -318,7 +344,8 @@ def check(draft: Dict[str, Any], fact: Dict[str, Any], forbidden_names: List[str
     for label, part, allowed in (
             [("the headline", draft.get("headline", ""), everywhere),
              ("the lede", draft.get("lede", ""), everywhere),
-             ("the sign off", draft.get("sign_off", ""), everywhere)]
+             ("the sign off", draft.get("sign_off", ""), everywhere),
+             ("the purse line", draft.get("purse", ""), everywhere)]
             + [("matchup paragraph %d" % (i + 1), para,
                 shared | allowed_numbers(fact["matchups"][i]))
                for i, para in enumerate(draft.get("paragraphs", [])[:len(fact["matchups"])])]):
@@ -349,6 +376,11 @@ def check(draft: Dict[str, Any], fact: Dict[str, Any], forbidden_names: List[str
         # A manager's name is allowed only where it is also a team or player name in the facts.
         if n and re.search(r"\b%s\b" % re.escape(n), text) and n not in fact_text:
             problems.append("It names a real person who is not an NFL player in the facts: %s." % n)
+    money = (fact.get("in_the_money_this_week") or {}).get("paid", [])
+    missing = [p["team"] for p in money if p["team"] not in draft.get("purse", "")]
+    if missing:
+        problems.append("The purse line does not name every team in the money: %s."
+                        % ", ".join(missing))
     if len(draft.get("headline", "").split()) >= 14:
         problems.append("The headline is fourteen words or longer.")
     return problems
@@ -364,6 +396,7 @@ def recap_path(season: int, week: int) -> Path:
 
 def generate(conn: sqlite3.Connection, league_key: str, week: Optional[int] = None,
              client: Any = None, newage: Optional[Dict[str, Any]] = None,
+             purse: Optional[Dict[str, Any]] = None,
              voice: Optional[str] = None, force: bool = False,
              now: Optional[Callable[[], datetime]] = None) -> Optional[Path]:
     """Write this week's recap file if it does not exist. Returns its path, or None."""
@@ -377,7 +410,7 @@ def generate(conn: sqlite3.Connection, league_key: str, week: Optional[int] = No
 
     cfg = read_toml(LEAGUE_TOML).get("recaps", {})
     model = cfg.get("model", "claude-opus-5")
-    fact = facts(conn, league_key, week, newage)
+    fact = facts(conn, league_key, week, newage, purse)
     voice = voice if voice is not None else load_voice()
     managers = [r["manager_name"] for r in conn.execute(
         "SELECT manager_name FROM teams WHERE league_key=?", (league_key,)) if r["manager_name"]]
@@ -394,6 +427,7 @@ def generate(conn: sqlite3.Connection, league_key: str, week: Optional[int] = No
         "league_key": league_key, "season": int(season.league["season"]), "week": week,
         "headline": draft["headline"], "lede": draft["lede"], "paragraphs": draft["paragraphs"],
         "sign_off": (draft.get("sign_off") or "").strip(),
+        "purse": (draft.get("purse") or "").strip(),
         "status": "published", "voice": "Doc", "model": draft.get("model", model),
         "generated_at": (now() if now else datetime.now(timezone.utc)).isoformat(),
     }

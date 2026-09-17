@@ -116,6 +116,15 @@ season view would have put them. If the positioning rule changes, change both.
 `sacko`, `blowout`, `nailbiter`, `regret`, and `trench`, each naming a
 `team_index` and a value, some naming a `player_key`.
 
+`purse` is the commissioner's weekly high scores, which pay out at the end of the
+season. `places` is how many are paid, `amounts[]` is what each place is worth (from
+`league.toml`, currently $40, $20, $10, $5), `currency` is the symbol, and
+`paid_so_far` is the running total. `weeks[]` is newest first with `paid[]`
+(`team_index`, `points`, `place`, `amount`, `tied`); `tally[]` carries each team's
+`places[]` count by finishing place, `weeks_in_the_money`, `points`, and `money`.
+Ranks are competition ranks, so a tie at the cut pays everyone tied that place's
+amount, and a week can pay more than `places` teams.
+
 `team_weeks[]` is one row per team per week: `points`, `optimal`, `regret`, and
 the `best_starter` / `worst_starter` / `best_bench` / `best_idp` references that
 feed the record book.
@@ -224,7 +233,8 @@ players by key and resolves through this one.
 ## recaps.json
 
 `recaps[]`, newest first, each with `week`, `headline`, `lede`, `paragraphs[]` (one
-per matchup, in order), `sign_off` (a closing line, possibly empty), `status`,
+per matchup, in order), `purse` (the teams in the money that week), `sign_off` (a
+closing line, possibly empty), `status`,
 `voice`, `model`, and `generated_at`. Only published recaps are listed, read from
 `data/recaps/`, so an empty list is normal early in a season and the site shows
 a holding card.

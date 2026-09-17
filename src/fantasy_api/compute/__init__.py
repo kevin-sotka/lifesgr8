@@ -625,10 +625,54 @@ def races(season: Season, totals, splits, cfg: Dict[str, Any], jockeys=None,
 
 
 # =============================================================================
+# the purse
+# =============================================================================
+
+def purse(season: Season, places: int, amounts: Optional[Dict[int, float]] = None,
+          currency: str = "$") -> Dict[str, Any]:
+    """
+    The weekly high scores the commissioner pays out at the end of the season.
+
+    Ranks are competition ranks, so a tie at the cut pays everyone tied: two teams
+    level on 4th means five teams in the money that week. The tally counts each
+    finishing place separately, because 1st four times is not 4th four times.
+    """
+    amounts = amounts or {}
+    weeks_out, tally = [], {i: {"team_index": i, "places": [0] * places, "weeks_in_the_money": 0,
+                                "points": 0.0, "money": 0.0} for i in range(season.n)}
+    for week in season.completed:
+        scores = season.team_points(week)
+        ordered = sorted(range(season.n), key=lambda i: -scores[i])
+        paid = []
+        for ti in ordered:
+            rank = 1 + sum(1 for o in range(season.n) if scores[o] > scores[ti])
+            if rank > places:
+                continue
+            # A tie at the cut pays every tied team that place's amount, which is how the
+            # commissioner has always run it.
+            money = amounts.get(rank, 0.0)
+            paid.append({"team_index": ti, "points": round(scores[ti], 2), "place": rank,
+                         "amount": money,
+                         "tied": sum(1 for o in range(season.n) if scores[o] == scores[ti]) > 1})
+            tally[ti]["places"][rank - 1] += 1
+            tally[ti]["weeks_in_the_money"] += 1
+            tally[ti]["points"] = round(tally[ti]["points"] + scores[ti], 2)
+            tally[ti]["money"] = round(tally[ti]["money"] + money, 2)
+        weeks_out.append({"week": week, "paid": paid})
+
+    rows = sorted(tally.values(), key=lambda r: (-r["money"], -r["weeks_in_the_money"], -r["points"]))
+    return {"places": places, "currency": currency,
+            "amounts": [amounts.get(p, 0.0) for p in range(1, places + 1)],
+            "paid_so_far": round(sum(r["money"] for r in rows), 2),
+            "weeks": list(reversed(weeks_out)), "tally": rows}
+
+
+# =============================================================================
 # weeks and awards
 # =============================================================================
 
-def weeks(season: Season, tw: List[Dict[str, Any]]) -> Dict[str, Any]:
+def weeks(season: Season, tw: List[Dict[str, Any]], purse_cfg: Optional[Dict[str, Any]] = None
+          ) -> Dict[str, Any]:
     by = {(r["week"], r["team_index"]): r for r in tw}
     out = []
     for week in season.completed:
@@ -667,7 +711,11 @@ def weeks(season: Season, tw: List[Dict[str, Any]]) -> Dict[str, Any]:
                                 "points": trench["best_idp"]["points"]}
         start = season.matchups[week][0]["week_start"]
         out.append({"week": week, "date": start, "matchups": ms, "awards": awards})
-    return {"week": season.completed_week, "weeks": out, "team_weeks": tw}
+    cfg = purse_cfg or {}
+    places = int(cfg.get("places", 4))
+    amounts = {p: float(cfg.get("place_%d" % p, 0)) for p in range(1, places + 1)}
+    return {"week": season.completed_week, "weeks": out, "team_weeks": tw,
+            "purse": purse(season, places, amounts, cfg.get("currency", "$"))}
 
 
 # =============================================================================
@@ -892,7 +940,7 @@ def run(conn: sqlite3.Connection, league_key: str, out_dir: Path = OUT,
         "league": league_json(season, rules, assign_silks(season), built_at),
         "standings": standings(season, tw, rules),
         "races": races(season, totals, splits, race_cfg, jockeys, split_jockeys),
-        "season": weeks(season, tw),
+        "season": weeks(season, tw, rules.get("purse", {})),
         "draft": {
             "week": season.completed_week, "weeks_elapsed": len(season.completed),
             "baseline": {
