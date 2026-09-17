@@ -104,6 +104,13 @@ class Checks(unittest.TestCase):
 
 
 class Generate(unittest.TestCase):
+    def test_the_schema_pins_the_paragraph_count_to_the_matchups(self):
+        client = FakeClient(good_draft())
+        recap.write(FACTS, "voice", "claude-opus-5", client)
+        schema = client.requests[0]["output_config"]["format"]["schema"]["properties"]["paragraphs"]
+        self.assertEqual((schema["minItems"], schema["maxItems"]),
+                         (len(FACTS["matchups"]), len(FACTS["matchups"])))
+
     def test_request_shape(self):
         client = FakeClient(good_draft())
         recap.write(FACTS, "Doc is a frontier guru.", "claude-opus-5", client)

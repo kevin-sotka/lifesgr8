@@ -168,17 +168,27 @@ whole.
 --- Doc's character sheet ---
 """
 
-SCHEMA = {
-    "type": "object",
-    "properties": {
-        "headline": {"type": "string"},
-        "lede": {"type": "string"},
-        "paragraphs": {"type": "array", "items": {"type": "string"}},
-        "sign_off": {"type": "string"},
-    },
-    "required": ["headline", "lede", "paragraphs", "sign_off"],
-    "additionalProperties": False,
-}
+def schema_for(matchups: int) -> Dict[str, Any]:
+    """
+    The response schema, fixed to this week's matchup count.
+
+    Saying "one paragraph per matchup" in the prompt was not enough: Doc kept adding
+    an intro or a closing line to the list. minItems and maxItems make the API itself
+    hold the array to exactly one entry per matchup, and sign_off gives the closing
+    line somewhere to live.
+    """
+    return {
+        "type": "object",
+        "properties": {
+            "headline": {"type": "string"},
+            "lede": {"type": "string"},
+            "paragraphs": {"type": "array", "items": {"type": "string"},
+                           "minItems": matchups, "maxItems": matchups},
+            "sign_off": {"type": "string"},
+        },
+        "required": ["headline", "lede", "paragraphs", "sign_off"],
+        "additionalProperties": False,
+    }
 
 
 def load_voice() -> str:
@@ -202,7 +212,8 @@ def write(fact: Dict[str, Any], voice: str, model: str, client: Any = None,
         max_tokens=16000,
         betas=["server-side-fallback-2026-07-01"],
         fallbacks="default",
-        output_config={"effort": "high", "format": {"type": "json_schema", "schema": SCHEMA}},
+        output_config={"effort": "high",
+                       "format": {"type": "json_schema", "schema": schema_for(len(fact["matchups"]))}},
         system=RULES + voice,
         messages=[{"role": "user", "content": user}],
     )
