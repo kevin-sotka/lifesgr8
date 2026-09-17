@@ -117,7 +117,9 @@ unreachable the site still builds; the headline uses the last files on disk.
 **The Purse** is the commissioner's weekly high scores, which he pays out at the end
 of the season. The top four each week are worth $40, $20, $10 and $5, set in
 `league.toml`. This week's four show on The Card, the running tally and the week by
-week log live on Standings, and Doc names them in every recap.
+week log live on Standings, and Doc names them in every recap. The league's other
+payouts (regular season finish, playoffs, toilet bowl, season highs) are noted in
+`league.toml` but not built.
 
 **Rules Yahoo does not carry** (the commissioner runs matchups and the playoff
 tree by hand) live in `league.toml`. It currently says top 8 make a winners

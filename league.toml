@@ -32,3 +32,12 @@ place_1 = 40
 place_2 = 20
 place_3 = 10
 place_4 = 5
+
+# The rest of the commissioner's payouts, written down but deliberately not built yet.
+# From the 2024 sheet and Kevin, September 2026:
+#   regular season finish: top 3 paid
+#   playoffs: top 4 paid
+#   toilet bowl: $40 to the winner of the bottom eight bracket
+#   highest single week score of the season: $40
+#   most points for the whole season: $40
+# The Purse on the site covers the weekly high scores only.
