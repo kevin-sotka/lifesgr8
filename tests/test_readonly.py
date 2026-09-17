@@ -135,6 +135,27 @@ class Failures(unittest.TestCase):
         self.assertEqual(len(calls), 3)
         self.assertEqual(sleeps, [2.0, 4.0])
 
+    def test_a_response_cut_off_mid_body_is_retried_and_not_snapshotted(self):
+        import http.client
+        calls, sleeps = [], []
+
+        class Truncated(FakeResponse):
+            def read(self, *a):
+                raise http.client.IncompleteRead(b'{"fantasy_content": {"lea')
+
+        def opener(req, timeout):
+            calls.append(1)
+            return Truncated(b"") if len(calls) == 1 else FakeResponse(b'{"ok": 1}')
+
+        with tempfile.TemporaryDirectory() as tmp:
+            data = YahooClient(SETTINGS, raw_dir=Path(tmp), token_provider=lambda force=False: "tok",
+                               opener=opener, sleep=sleeps.append).get("game/nfl")
+            files = list(Path(tmp).rglob("*.json"))
+            self.assertEqual(data, {"ok": 1})
+            self.assertEqual(len(files), 1)                  # only the complete body
+            self.assertEqual(files[0].read_bytes(), b'{"ok": 1}')
+        self.assertEqual((len(calls), sleeps), (2, [2.0]))
+
     def test_settings_repr_hides_secrets(self):
         self.assertNotIn("secret-shh", repr(SETTINGS))
         self.assertNotIn("id-xyz", repr(SETTINGS))

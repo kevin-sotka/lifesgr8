@@ -13,9 +13,11 @@ parsed form is data that eventually gets lost.
 
 from __future__ import annotations
 
+import http.client
 import json
 import logging
 import re
+import socket
 import time
 import urllib.error
 import urllib.request
@@ -113,6 +115,16 @@ class YahooClient:
                 if attempt == self.MAX_ATTEMPTS:
                     raise YahooError("Could not reach Yahoo: %s" % exc.reason)
                 self._sleep(min(60.0, 2.0 ** attempt))
+            except (http.client.IncompleteRead, http.client.RemoteDisconnected,
+                    ConnectionError, TimeoutError, socket.timeout) as exc:
+                # Yahoo sometimes drops a large response partway through the body. The
+                # status line already said 200, so none of the handlers above see it.
+                # Nothing was written to disk, so retrying is safe.
+                if attempt == self.MAX_ATTEMPTS:
+                    raise YahooError("Yahoo kept cutting off %s: %s" % (path, exc.__class__.__name__))
+                wait = min(60.0, 2.0 ** attempt)
+                log.warning("Yahoo cut off %s (%s), retrying in %.0fs", path, exc.__class__.__name__, wait)
+                self._sleep(wait)
         else:  # pragma: no cover - loop always breaks or raises
             raise YahooError("Exhausted retries for %s" % path)
 
