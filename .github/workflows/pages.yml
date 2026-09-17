@@ -130,8 +130,11 @@ jobs:
           import json; r = json.load(open('$RECAP'))
           print('## ' + r['headline'] + '\n\n' + r['lede'] + '\n\n' + '\n\n'.join(r['paragraphs']))
           print('\n---\nMerge to publish. Edit the file on this branch first if anything needs fixing. Every number was checked against the league facts before this was opened.')")
-            gh pr create --base main --head "$branch" --title "Week $week recap from Doc" --body "$body" \
-              || echo "A pull request for $branch already exists."
+            if gh pr view "$branch" --json number >/dev/null 2>&1; then
+              gh pr edit "$branch" --title "Week $week recap from Doc" --body "$body"
+            else
+              gh pr create --base main --head "$branch" --title "Week $week recap from Doc" --body "$body"
+            fi
           fi
 
       - uses: actions/configure-pages@v5

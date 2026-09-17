@@ -2,6 +2,9 @@
  "league": "Lifes Gr8",
  "season": 2026,
  "week": 1,
+ "regular_season_ends_after_week": 13,
+ "weeks_left_in_regular_season": 12,
+ "teams_that_make_the_playoffs": 8,
  "week_high": {
   "team": "sisu",
   "points": 193.02

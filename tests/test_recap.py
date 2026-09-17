@@ -70,6 +70,14 @@ class Checks(unittest.TestCase):
         self.assertTrue(any("777" in p and "do not belong" in p for p in problems), problems)
         self.assertFalse(any("36.4" in p for p in problems))   # 36.35 rounded is fine
 
+    def test_spelled_out_numbers_are_rejected(self):
+        d = good_draft()
+        d["sign_off"] = "Fifteen weeks of trail left, folks."
+        self.assertTrue(any("spells numbers out" in p for p in recap.check(d, FACTS, MANAGERS)))
+        d = good_draft()
+        d["sign_off"] = "12 weeks of trail left, and half a point decided a game."
+        self.assertEqual([p for p in recap.check(d, FACTS, MANAGERS) if "spells" in p], [])
+
     def test_years_are_rejected_even_when_digits_match_a_score(self):
         for story in (" Same as a fella I knew in '24.", " Ain't seen that since 2019."):
             d = good_draft()

@@ -114,8 +114,13 @@ def facts(conn: sqlite3.Connection, league_key: str, week: int,
     unbeaten = [name(i) for i in range(season.n) if rec[i][1] == 0 and rec[i][0] > 0]
     winless = [name(i) for i in range(season.n) if rec[i][0] == 0 and rec[i][1] > 0]
 
+    rules = read_toml(LEAGUE_TOML)
+    ends = int(rules.get("season", {}).get("regular_season_end_week", 13))
     out = {
         "league": season.league["name"], "season": season.league["season"], "week": week,
+        "regular_season_ends_after_week": ends,
+        "weeks_left_in_regular_season": max(0, ends - week),
+        "teams_that_make_the_playoffs": int(rules.get("playoffs", {}).get("teams", 8)),
         "week_high": {"team": name(hi), "points": round(scores[hi], 2)},
         "week_low": {"team": name(lo), "points": round(scores[lo], 2)},
         "best_idp_performance": ({"team": name(idp["team_index"]), **player(idp["best_idp"])}
@@ -164,6 +169,9 @@ have benched someone else. Do not mix the two into one figure.
 people except the NFL players listed in the facts.
 4. Losing badly, benching points, and bad lineups are fair game. Nothing outside the game is.
 5. Never use an em dash or an en dash. Use commas, periods, or colons.
+5b. Write every number as a numeral, taken from the facts. Do not spell numbers out: \
+"12 weeks", never "twelve weeks". If you want to say how much of the season is left, the \
+facts carry it.
 6. Stay in character. Never mention AI, prompts, models, data feeds, or how the recap was made.
 7. "paragraphs" holds exactly one paragraph per matchup, in the order given, two to four \
 sentences each, naming both teams. Put nothing else in that list.
@@ -320,6 +328,14 @@ def check(draft: Dict[str, Any], fact: Dict[str, Any], forbidden_names: List[str
                             % (label[0].upper() + label[1:], ", ".join(bad)))
     # Rounding means a point total can vouch for almost any small whole number, so
     # years get their own check: "in '24" or "back in 2019" are never in the facts.
+    spelled = sorted(set(w.lower() for w in re.findall(
+        r"\b(?:[Tt]en|[Ee]leven|[Tt]welve|[Tt]hirteen|[Ff]ourteen|[Ff]ifteen|[Ss]ixteen|"
+        r"[Ss]eventeen|[Ee]ighteen|[Nn]ineteen|[Tt]wenty|[Tt]hirty|[Ff]orty|[Ff]ifty|"
+        r"[Ss]ixty|[Ss]eventy|[Ee]ighty|[Nn]inety|[Hh]undred|[Tt]housand)\b", text)))
+    if spelled:
+        # A spelled-out number is never checked against the facts, so it is the one place
+        # an invented figure can hide. "Fifteen weeks of trail left" got through once.
+        problems.append("It spells numbers out instead of using numerals: %s." % ", ".join(spelled))
     years = sorted(set(re.findall(r"['\u2018\u2019](\d{2})\b", text)) |
                    {y for y in re.findall(r"\b(19\d{2}|20\d{2})\b", text) if int(y) != fact["season"]})
     if years:
