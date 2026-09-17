@@ -158,9 +158,11 @@ people except the NFL players listed in the facts.
 4. Losing badly, benching points, and bad lineups are fair game. Nothing outside the game is.
 5. Never use an em dash or an en dash. Use commas, periods, or colons.
 6. Stay in character. Never mention AI, prompts, models, data feeds, or how the recap was made.
-7. One paragraph per matchup, in the order given, two to four sentences each. Name both \
-teams in every matchup paragraph.
-8. Headline: one line, under fourteen words. Lede: two or three sentences on the week as a \
+7. "paragraphs" holds exactly one paragraph per matchup, in the order given, two to four \
+sentences each, naming both teams. Put nothing else in that list.
+8. "sign_off" is for a closing line to the league, one or two sentences. Leave it as an \
+empty string if the week does not want one. Any parting words go here, never in "paragraphs".
+9. Headline: one line, under fourteen words. Lede: two or three sentences on the week as a \
 whole.
 
 --- Doc's character sheet ---
@@ -172,8 +174,9 @@ SCHEMA = {
         "headline": {"type": "string"},
         "lede": {"type": "string"},
         "paragraphs": {"type": "array", "items": {"type": "string"}},
+        "sign_off": {"type": "string"},
     },
-    "required": ["headline", "lede", "paragraphs"],
+    "required": ["headline", "lede", "paragraphs", "sign_off"],
     "additionalProperties": False,
 }
 
@@ -252,13 +255,16 @@ def _norm(x: float) -> str:
 
 def check(draft: Dict[str, Any], fact: Dict[str, Any], forbidden_names: List[str]) -> List[str]:
     problems = []
-    text_parts = [draft.get("headline", ""), draft.get("lede", "")] + list(draft.get("paragraphs", []))
+    text_parts = ([draft.get("headline", ""), draft.get("lede", ""), draft.get("sign_off", "")]
+                  + list(draft.get("paragraphs", [])))
     text = "\n".join(text_parts)
     if "—" in text or "–" in text:
         problems.append("It uses an em dash or en dash. Use commas, periods, or colons.")
     if len(draft.get("paragraphs", [])) != len(fact["matchups"]):
-        problems.append("It has %d matchup paragraphs; there are %d matchups."
-                        % (len(draft.get("paragraphs", [])), len(fact["matchups"])))
+        problems.append(
+            "\"paragraphs\" has %d entries; there are %d matchups, so it needs exactly %d. "
+            "A closing line to the league goes in \"sign_off\", not in \"paragraphs\"."
+            % (len(draft.get("paragraphs", [])), len(fact["matchups"]), len(fact["matchups"]))),
     ok = allowed_numbers(fact)
     bad = sorted({tok for tok in NUMBER.findall(text) if _norm(float(tok)) not in ok})
     if bad:
@@ -322,6 +328,7 @@ def generate(conn: sqlite3.Connection, league_key: str, week: Optional[int] = No
     record = {
         "league_key": league_key, "season": int(season.league["season"]), "week": week,
         "headline": draft["headline"], "lede": draft["lede"], "paragraphs": draft["paragraphs"],
+        "sign_off": (draft.get("sign_off") or "").strip(),
         "status": "published", "voice": "Doc", "model": draft.get("model", model),
         "generated_at": (now() if now else datetime.now(timezone.utc)).isoformat(),
     }

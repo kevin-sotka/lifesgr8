@@ -678,6 +678,7 @@
     });
     var body = el("div.recap-body", el("p.lede", { text: r.lede }));
     r.paragraphs.forEach(function (p) { body.appendChild(el("p", { text: p })); });
+    if (r.sign_off) body.appendChild(el("p.recap-signoff", { text: r.sign_off }));
     card.body.appendChild(body);
     card.body.appendChild(el("p.sub", { style: "margin-top:18px",
       text: "Filed by Doc, " + LG.dateTime(r.generated_at) + ". Every number in it comes "

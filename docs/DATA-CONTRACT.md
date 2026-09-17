@@ -223,8 +223,9 @@ players by key and resolves through this one.
 
 ## recaps.json
 
-`recaps[]`, newest first, each with `week`, `headline`, `lede`, `paragraphs[]`,
-`status`, and `generated_at`. Only published recaps are listed, read from
+`recaps[]`, newest first, each with `week`, `headline`, `lede`, `paragraphs[]` (one
+per matchup, in order), `sign_off` (a closing line, possibly empty), `status`,
+`voice`, `model`, and `generated_at`. Only published recaps are listed, read from
 `data/recaps/`, so an empty list is normal early in a season and the site shows
 a holding card.
 

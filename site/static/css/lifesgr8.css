@@ -461,6 +461,7 @@ table.data .rk { color: var(--ink-3); width: 26px; }
 .recap-body { font-size: 15.5px; line-height: 1.72; max-width: 66ch; }
 .recap-body .lede { font-size: 17px; color: var(--ink); border-left: 3px solid var(--brass); padding-left: 14px; }
 .recap-body p + p { margin-top: .95em; }
+.recap-signoff { color: var(--ink-2); border-top: 1px solid var(--rule-soft); padding-top: 12px; }
 .recap-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
 .archive-item {
   display: flex; align-items: baseline; gap: 10px; padding: 11px 16px;

@@ -28,7 +28,8 @@ def good_draft():
     return {"headline": "Week 1: sisu Rides High, e-mans revenge Eats Dust",
             "lede": "Hold up there. sisu hung %s on the board and nobody else came close."
                     % FACTS["week_high"]["points"],
-            "paragraphs": paras}
+            "paragraphs": paras,
+            "sign_off": "Saddle up, pardners. Same time next week."}
 
 
 class FakeClient:
@@ -74,7 +75,20 @@ class Checks(unittest.TestCase):
     def test_every_matchup_needs_both_teams_and_its_own_paragraph(self):
         d = good_draft()
         d["paragraphs"] = d["paragraphs"][:-1]
-        self.assertTrue(any("matchup paragraphs" in p for p in recap.check(d, FACTS, MANAGERS)))
+        self.assertTrue(any("entries" in p for p in recap.check(d, FACTS, MANAGERS)))
+
+    def test_a_closing_line_belongs_in_sign_off_not_in_paragraphs(self):
+        d = good_draft()
+        d["paragraphs"].append("That's the week, pardners. Mind the waiver wire.")
+        problems = recap.check(d, FACTS, MANAGERS)
+        self.assertTrue(any("sign_off" in p for p in problems), problems)
+
+    def test_the_sign_off_obeys_the_same_rules(self):
+        d = good_draft()
+        d["sign_off"] = "Ain't seen a week like it since 2011 \u2014 not once."
+        problems = recap.check(d, FACTS, MANAGERS)
+        self.assertTrue(any("dash" in p for p in problems), problems)
+        self.assertTrue(any("years" in p for p in problems), problems)
         d = good_draft()
         loser = FACTS["matchups"][2]["loser"]["team"]
         d["paragraphs"][2] = d["paragraphs"][2].replace(loser, "the other fellas")
