@@ -336,7 +336,7 @@
       { key: "name", label: "Player", sort: false, cell: function (r) {
           return el("span", null, el("em", { text: r.name }), " ",
             el("span.ppos", { text: r.position + " \u00B7 " + r.nfl_team })); } },
-      { key: "team", label: "Roster", sort: false, cell: function (r) { return LG.teamName(r.team_index, "code"); } },
+      { key: "team", label: "Roster", sort: false, cell: function (r) { return LG.teamName(r.team_index); } },
       { key: "bar", label: "", sort: false, cell: function (r) { return V.naBar(board, rows, r); } },
       { key: "value", label: board.short, sort: false, cell: function (r) { return V.naValue(board, r.value); } },
       { key: "detail", label: "Sample", sort: false, cls: "ppos", cell: function (r) { return V.naDetail(board.id, r.detail); } }
@@ -363,7 +363,7 @@
           el("b.num", { text: fact.display }),
           el("span", { text: board.unit })),
         el("div.sotw-who", null,
-          LG.teamName(fact.team_index, "code", "lg"),
+          LG.teamName(fact.team_index, undefined, "lg"),
           el("p", { text: fact.sentence }))));
     }
     var list = el("ol.sotw-list");
@@ -371,7 +371,7 @@
       list.appendChild(el("li", null,
         el("span.sotw-rank.num", { text: V.naRank(r) }),
         el("span.sotw-name", null, LG.silk(r.team_index, "sm"), " ", el("span.tcode", { text: LG.team(r.team_index).code }),
-          " ", el("em", { text: r.short }), el("span.ppos", { text: " " + r.position })),
+          " ", el("em", { text: r.short }), el("span.ppos", { text: " " + r.position + " \u00B7 " + LG.team(r.team_index).name })),
         el("span.sotw-bar", null, V.naBar(board, board.leaders.slice(0, 5), r)),
         el("span.sotw-val.num", { text: V.naValue(board, r.value) })));
     });
@@ -494,7 +494,7 @@
               el("span", null, el("em", { text: r.name }), " ",
                 el("span.ppos", { text: r.position + " · " + r.nfl_team }))); } },
         { key: "team", label: "Roster", sort: false, cell: function (r) {
-            return LG.teamName(r.team_index, "code"); } },
+            return LG.teamName(r.team_index); } },
         { key: "pick_number", label: "Pick", cell: function (r) {
             return r.undrafted ? el("span.chip", { text: "UDFA" }) : "#" + r.pick_number; } },
         { key: "points", label: "Actual", cell: function (r) { return LG.fmt(r.points, 1); } },
@@ -568,7 +568,7 @@
     var head = el("div.txn-head");
     t.teams.forEach(function (ti, n) {
       if (n) head.appendChild(el("span.tmgr", { text: "↔" }));
-      head.appendChild(LG.teamName(ti, compact ? "code" : undefined));
+      head.appendChild(LG.teamName(ti));
     });
     if (pending) head.appendChild(el("span.chip.live", { text: t.type === "pending_trade" ? "Pending trade" : "Pending claim" }));
     else if (t.type === "trade") head.appendChild(el("span.chip", { text: "Trade" }));
@@ -730,7 +730,7 @@
           return el("span", null, el("em", { text: r.name }), " ",
             el("span.ppos", { text: r.position + " · " + r.nfl_team })); } },
       { key: "team", label: "Roster", sort: false, cell: function (r) {
-          return LG.teamName(r.team_index, "code"); } },
+          return LG.teamName(r.team_index); } },
       { key: cfg.col, label: cfg.label, cell: function (r) { return LG.fmt(r[cfg.col], cfg.dp); } }
     ].concat(cfg.col === "points" ? [] : [
       // Fantasy points sit beside the counting stat, except on the board that is
@@ -769,7 +769,7 @@
             return el("span", null, el("em", { text: r.name }), " ",
               el("span.ppos", { text: r.position })); } },
         { key: "team", label: "Roster", sort: false, cell: function (r) {
-            return LG.teamName(r.team_index, "code"); } },
+            return LG.teamName(r.team_index); } },
         { key: "points", label: "Pts", cell: function (r) { return LG.fmt(r.points, 1); } }
       ], list, { sort: "points" }));
       return c;
@@ -790,7 +790,7 @@
           return el("span", null, el("em", { text: r.name }), " ",
             el("span.ppos", { text: r.position })); } },
       { key: "team", label: "Roster", sort: false, cell: function (r) {
-          return LG.teamName(r.team_index, "code"); } },
+          return LG.teamName(r.team_index); } },
       { key: "started", label: "Started", sort: false, cell: function (r) {
           return r.started ? el("span.chip.good", { text: "Yes" })
                            : el("span.chip.bad", { text: "Benched" }); } },
