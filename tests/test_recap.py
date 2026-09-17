@@ -104,12 +104,24 @@ class Checks(unittest.TestCase):
 
 
 class Generate(unittest.TestCase):
-    def test_the_schema_pins_the_paragraph_count_to_the_matchups(self):
+    def test_the_schema_has_one_required_field_per_matchup(self):
         client = FakeClient(good_draft())
         recap.write(FACTS, "voice", "claude-opus-5", client)
-        schema = client.requests[0]["output_config"]["format"]["schema"]["properties"]["paragraphs"]
-        self.assertEqual((schema["minItems"], schema["maxItems"]),
-                         (len(FACTS["matchups"]), len(FACTS["matchups"])))
+        schema = client.requests[0]["output_config"]["format"]["schema"]
+        games = [k for k in schema["properties"] if k.startswith("game_")]
+        self.assertEqual(len(games), len(FACTS["matchups"]))
+        self.assertTrue(all(g in schema["required"] for g in games))
+        first = FACTS["matchups"][0]
+        self.assertIn(first["winner"]["team"], schema["properties"]["game_1"]["description"])
+        self.assertIn(first["loser"]["team"], schema["properties"]["game_1"]["description"])
+
+    def test_per_game_fields_become_the_ordered_paragraph_list(self):
+        payload = {"headline": "H", "lede": "L", "sign_off": "S"}
+        for n in range(1, len(FACTS["matchups"]) + 1):
+            payload["game_%d" % n] = "game %d" % n
+        out = recap.normalize(payload, len(FACTS["matchups"]))
+        self.assertEqual(out["paragraphs"][:3], ["game 1", "game 2", "game 3"])
+        self.assertEqual(len(out["paragraphs"]), len(FACTS["matchups"]))
 
     def test_request_shape(self):
         client = FakeClient(good_draft())

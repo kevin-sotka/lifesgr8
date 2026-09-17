@@ -168,26 +168,45 @@ whole.
 --- Doc's character sheet ---
 """
 
-def schema_for(matchups: int) -> Dict[str, Any]:
+def schema_for(fact: Dict[str, Any]) -> Dict[str, Any]:
     """
-    The response schema, fixed to this week's matchup count.
+    The response schema, shaped to this week's actual matchups.
 
-    Saying "one paragraph per matchup" in the prompt was not enough: Doc kept adding
-    an intro or a closing line to the list. minItems and maxItems make the API itself
-    hold the array to exactly one entry per matchup, and sign_off gives the closing
-    line somewhere to live.
+    One required field per game rather than a list. Telling Doc "one paragraph per
+    matchup" in the prompt was not enough (he kept adding an intro or a closing line
+    to the list), and a list cannot be pinned to a length here: structured outputs
+    only accept minItems of 0 or 1. A field per game fixes the count, names the two
+    teams in the field's own description, and leaves sign_off for parting words.
     """
+    games = {}
+    for n, m in enumerate(fact["matchups"], 1):
+        games["game_%d" % n] = {
+            "type": "string",
+            "description": "Two to four sentences on %s against %s. Name both teams."
+                           % (m["winner"]["team"], m["loser"]["team"]),
+        }
     return {
         "type": "object",
         "properties": {
-            "headline": {"type": "string"},
-            "lede": {"type": "string"},
-            "paragraphs": {"type": "array", "items": {"type": "string"},
-                           "minItems": matchups, "maxItems": matchups},
-            "sign_off": {"type": "string"},
+            "headline": {"type": "string", "description": "One line, under fourteen words."},
+            "lede": {"type": "string", "description": "Two or three sentences on the week."},
+            "sign_off": {"type": "string",
+                         "description": "A closing line to the league, or an empty string."},
+            **games,
         },
-        "required": ["headline", "lede", "paragraphs", "sign_off"],
+        "required": ["headline", "lede", "sign_off"] + list(games),
         "additionalProperties": False,
+    }
+
+
+def normalize(payload: Dict[str, Any], matchups: int) -> Dict[str, Any]:
+    """Turn the per-game fields back into the ordered list the site renders."""
+    if "paragraphs" in payload:
+        return payload
+    return {
+        "headline": payload["headline"], "lede": payload["lede"],
+        "sign_off": payload.get("sign_off", ""),
+        "paragraphs": [payload.get("game_%d" % n, "") for n in range(1, matchups + 1)],
     }
 
 
@@ -213,7 +232,7 @@ def write(fact: Dict[str, Any], voice: str, model: str, client: Any = None,
         betas=["server-side-fallback-2026-07-01"],
         fallbacks="default",
         output_config={"effort": "high",
-                       "format": {"type": "json_schema", "schema": schema_for(len(fact["matchups"]))}},
+                       "format": {"type": "json_schema", "schema": schema_for(fact)}},
         system=RULES + voice,
         messages=[{"role": "user", "content": user}],
     )
@@ -222,7 +241,7 @@ def write(fact: Dict[str, Any], voice: str, model: str, client: Any = None,
     if response.stop_reason == "max_tokens":
         raise RuntimeError("The recap was cut off at max_tokens")
     text = next(b.text for b in response.content if b.type == "text")
-    draft = json.loads(text)
+    draft = normalize(json.loads(text), len(fact["matchups"]))
     draft["model"] = response.model
     return draft
 
