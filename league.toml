@@ -1,0 +1,21 @@
+# League rules that Yahoo does not carry, because the commissioner runs them by hand.
+# Life's Gr8 has Yahoo's playoffs switched off: matchups and the playoff tree are
+# set by the commish. These values are a stand-in until the real logic arrives.
+# DATA, not code: change the numbers here, not in compute/.
+
+[season]
+regular_season_end_week = 13     # weeks 1-13 decide seeding
+
+[playoffs]
+teams = 8                        # top 8 make the winners bracket
+start_week = 14
+end_week = 17
+# Seeding tiebreak after record. Placeholder until the commish's rules land.
+tiebreak = "points_for"
+
+[recaps]
+# The Tuesday recap is the only generated prose on the site. Each draft arrives as a
+# pull request; merging it is what publishes it. After three weeks published without
+# edits, set auto_publish = true to commit recaps straight to main instead.
+auto_publish = false
+model = "claude-opus-5"

@@ -1,0 +1,493 @@
+{
+ "league": "Lifes Gr8",
+ "season": 2026,
+ "week": 1,
+ "week_high": {
+  "team": "sisu",
+  "points": 193.02
+ },
+ "week_low": {
+  "team": "e-mans revenge",
+  "points": 65.25
+ },
+ "best_idp_performance": {
+  "team": "densmen",
+  "name": "Ventrell Miller",
+  "position": "LB",
+  "points": 14.5
+ },
+ "most_points_left_on_bench": {
+  "team": "Zihuatanejo",
+  "points": 33.55,
+  "best_benched_player": {
+   "name": "T.J. Watt",
+   "position": "LB,DE",
+   "points": 21.0
+  }
+ },
+ "unbeaten_teams": [
+  "Long Howie",
+  "Jack Attack",
+  "Jrod",
+  "Norskes U Betcha",
+  "sisu",
+  "Super Troopers",
+  "Dart Vader",
+  "Zihuatanejo"
+ ],
+ "winless_teams": [
+  "Aeil",
+  "densmen",
+  "e-mans revenge",
+  "HAWKSRULE",
+  "Justin's Bad Team",
+  "Warthogs",
+  "WeBleedOrangeAndBlue",
+  "Scott's Hype"
+ ],
+ "matchups": [
+  {
+   "winner": {
+    "team": "sisu",
+    "points": 193.02,
+    "record_after": "1-0",
+    "streak_after": {
+     "result": "won",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Derrick Henry",
+     "position": "RB",
+     "points": 36.35
+    },
+    "worst_starter": {
+     "name": "Jadarian Price",
+     "position": "RB",
+     "points": 5.7
+    },
+    "points_left_on_bench": 19.72,
+    "best_benched_player": {
+     "name": "Jacoby Brissett",
+     "position": "QB",
+     "points": 21.24
+    }
+   },
+   "loser": {
+    "team": "densmen",
+    "points": 145.56,
+    "record_after": "0-1",
+    "streak_after": {
+     "result": "lost",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Jalen Hurts",
+     "position": "QB",
+     "points": 24.16
+    },
+    "worst_starter": {
+     "name": "Brandon Aubrey",
+     "position": "K",
+     "points": 1.0
+    },
+    "points_left_on_bench": 23.25,
+    "best_benched_player": {
+     "name": "Jalen Coker",
+     "position": "WR",
+     "points": 27.1
+    }
+   },
+   "margin": 47.46,
+   "tied": false,
+   "widest_margin_of_week": true
+  },
+  {
+   "winner": {
+    "team": "Jrod",
+    "points": 142.18,
+    "record_after": "1-0",
+    "streak_after": {
+     "result": "won",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Caleb Williams",
+     "position": "QB",
+     "points": 38.43
+    },
+    "worst_starter": {
+     "name": "Colston Loveland",
+     "position": "TE",
+     "points": 0.0
+    },
+    "points_left_on_bench": 16.35,
+    "best_benched_player": {
+     "name": "Cam Ward",
+     "position": "QB",
+     "points": 13.65
+    }
+   },
+   "loser": {
+    "team": "Aeil",
+    "points": 113.28,
+    "record_after": "0-1",
+    "streak_after": {
+     "result": "lost",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Seahawks",
+     "position": "DEF",
+     "points": 25.0
+    },
+    "worst_starter": {
+     "name": "Myles Garrett",
+     "position": "LB,DE",
+     "points": 0.0
+    },
+    "points_left_on_bench": 21.15,
+    "best_benched_player": {
+     "name": "Malik Willis",
+     "position": "QB",
+     "points": 16.15
+    }
+   },
+   "margin": 28.9,
+   "tied": false
+  },
+  {
+   "winner": {
+    "team": "Zihuatanejo",
+    "points": 87.23,
+    "record_after": "1-0",
+    "streak_after": {
+     "result": "won",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Lamar Jackson",
+     "position": "QB",
+     "points": 28.08
+    },
+    "worst_starter": {
+     "name": "AJ Barner",
+     "position": "TE",
+     "points": 1.45
+    },
+    "points_left_on_bench": 33.55,
+    "best_benched_player": {
+     "name": "T.J. Watt",
+     "position": "LB,DE",
+     "points": 21.0
+    }
+   },
+   "loser": {
+    "team": "e-mans revenge",
+    "points": 65.25,
+    "record_after": "0-1",
+    "streak_after": {
+     "result": "lost",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "D'Andre Swift",
+     "position": "RB",
+     "points": 29.7
+    },
+    "worst_starter": {
+     "name": "Texans",
+     "position": "DEF",
+     "points": 0.0
+    },
+    "points_left_on_bench": 20.62,
+    "best_benched_player": {
+     "name": "Aaron Rodgers",
+     "position": "QB",
+     "points": 16.27
+    }
+   },
+   "margin": 21.98,
+   "tied": false
+  },
+  {
+   "winner": {
+    "team": "Super Troopers",
+    "points": 121.8,
+    "record_after": "1-0",
+    "streak_after": {
+     "result": "won",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Brock Purdy",
+     "position": "QB",
+     "points": 25.75
+    },
+    "worst_starter": {
+     "name": "Jaylen Waddle",
+     "position": "WR",
+     "points": 0.5
+    },
+    "points_left_on_bench": 5.2,
+    "best_benched_player": {
+     "name": "Samaje Perine",
+     "position": "RB",
+     "points": 4.7
+    }
+   },
+   "loser": {
+    "team": "Scott's Hype",
+    "points": 101.53,
+    "record_after": "0-1",
+    "streak_after": {
+     "result": "lost",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Vikings",
+     "position": "DEF",
+     "points": 16.0
+    },
+    "worst_starter": {
+     "name": "Quentin Johnston",
+     "position": "WR",
+     "points": 1.65
+    },
+    "points_left_on_bench": 8.55,
+    "best_benched_player": {
+     "name": "T.J. Hockenson",
+     "position": "TE",
+     "points": 9.4
+    }
+   },
+   "margin": 20.27,
+   "tied": false
+  },
+  {
+   "winner": {
+    "team": "Long Howie",
+    "points": 102.02,
+    "record_after": "1-0",
+    "streak_after": {
+     "result": "won",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Justin Jefferson",
+     "position": "WR",
+     "points": 22.8
+    },
+    "worst_starter": {
+     "name": "Rashid Shaheed",
+     "position": "WR",
+     "points": 0.6
+    },
+    "points_left_on_bench": 11.8,
+    "best_benched_player": {
+     "name": "Jacory Croskey-Merritt",
+     "position": "RB",
+     "points": 12.4
+    }
+   },
+   "loser": {
+    "team": "Justin's Bad Team",
+    "points": 85.66,
+    "record_after": "0-1",
+    "streak_after": {
+     "result": "lost",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Kenneth Walker",
+     "position": "RB",
+     "points": 32.35
+    },
+    "worst_starter": {
+     "name": "Kyle Pitts Sr.",
+     "position": "TE",
+     "points": 0.0
+    },
+    "points_left_on_bench": 14.25,
+    "best_benched_player": {
+     "name": "Deebo Samuel Sr.",
+     "position": "WR",
+     "points": 11.6
+    }
+   },
+   "margin": 16.36,
+   "tied": false
+  },
+  {
+   "winner": {
+    "team": "Norskes U Betcha",
+    "points": 127.1,
+    "record_after": "1-0",
+    "streak_after": {
+     "result": "won",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Trevor Lawrence",
+     "position": "QB",
+     "points": 28.65
+    },
+    "worst_starter": {
+     "name": "Jordan Addison",
+     "position": "WR",
+     "points": 0.0
+    },
+    "points_left_on_bench": 12.05,
+    "best_benched_player": {
+     "name": "Tyler Shough",
+     "position": "QB",
+     "points": 35.2
+    }
+   },
+   "loser": {
+    "team": "WeBleedOrangeAndBlue",
+    "points": 116.83,
+    "record_after": "0-1",
+    "streak_after": {
+     "result": "lost",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Jahmyr Gibbs",
+     "position": "RB",
+     "points": 32.1
+    },
+    "worst_starter": {
+     "name": "Hunter Henry",
+     "position": "TE",
+     "points": 2.5
+    },
+    "points_left_on_bench": 30.19,
+    "best_benched_player": {
+     "name": "Bryce Young",
+     "position": "QB",
+     "points": 35.52
+    }
+   },
+   "margin": 10.27,
+   "tied": false
+  },
+  {
+   "winner": {
+    "team": "Dart Vader",
+    "points": 98.75,
+    "record_after": "1-0",
+    "streak_after": {
+     "result": "won",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Jaxson Dart",
+     "position": "QB",
+     "points": 30.5
+    },
+    "worst_starter": {
+     "name": "Terry McLaurin",
+     "position": "WR",
+     "points": 1.5
+    },
+    "points_left_on_bench": 14.4,
+    "best_benched_player": {
+     "name": "Baker Mayfield",
+     "position": "QB",
+     "points": 16.02
+    }
+   },
+   "loser": {
+    "team": "HAWKSRULE",
+    "points": 89.35,
+    "record_after": "0-1",
+    "streak_after": {
+     "result": "lost",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Dak Prescott",
+     "position": "QB",
+     "points": 17.0
+    },
+    "worst_starter": {
+     "name": "De'Zhaun Stribling",
+     "position": "WR",
+     "points": 0.0
+    },
+    "points_left_on_bench": 18.1,
+    "best_benched_player": {
+     "name": "Fred Warner",
+     "position": "LB",
+     "points": 11.0
+    }
+   },
+   "margin": 9.4,
+   "tied": false
+  },
+  {
+   "winner": {
+    "team": "Jack Attack",
+    "points": 103.53,
+    "record_after": "1-0",
+    "streak_after": {
+     "result": "won",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Josh Allen",
+     "position": "QB",
+     "points": 40.23
+    },
+    "worst_starter": {
+     "name": "Romeo Doubs",
+     "position": "WR",
+     "points": 0.0
+    },
+    "points_left_on_bench": 30.25,
+    "best_benched_player": {
+     "name": "Chiefs",
+     "position": "DEF",
+     "points": 23.0
+    }
+   },
+   "loser": {
+    "team": "Warthogs",
+    "points": 102.97,
+    "record_after": "0-1",
+    "streak_after": {
+     "result": "lost",
+     "games": 1
+    },
+    "top_starter": {
+     "name": "Javonte Williams",
+     "position": "RB",
+     "points": 20.0
+    },
+    "worst_starter": {
+     "name": "Courtland Sutton",
+     "position": "WR",
+     "points": 1.35
+    },
+    "points_left_on_bench": 23.17,
+    "best_benched_player": {
+     "name": "Jordan Love",
+     "position": "QB",
+     "points": 21.14
+    }
+   },
+   "margin": 0.56,
+   "tied": false,
+   "closest_margin_of_week": true
+  }
+ ],
+ "stat_of_the_week": {
+  "stat": "Points Over Expected",
+  "what_it_measures": "Actual fantasy points minus what a player's volume should have produced, scored with Life's Gr8's own settings. High means efficient, or lucky. Low means due.",
+  "leader": "Jalen Coker",
+  "team": "densmen",
+  "value": "+12.7 pts per game",
+  "nfl_rank": 1,
+  "qualifying_nfl_players": 104
+ }
+}

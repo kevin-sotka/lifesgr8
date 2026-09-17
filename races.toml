@@ -1,0 +1,105 @@
+# The Paddock - race definitions, silks, and track config.
+# This file is DATA, not code. Adding or retiring a race is a config change.
+#
+# Each [[race]] becomes one lane-set on The Paddock page. `stat` names the key the
+# compute layer emits per team in races.json. `direction` is "high" for races the
+# leader wins by having the most, "low" for races where less is better (the horse
+# still runs to the right; the ordering is simply inverted before positions are set).
+
+[track]
+# Leader-relative positioning, per CLAUDE.md. Do not change these without a reason
+# you can defend to sixteen managers.
+mode = "leader_relative"      # leader_relative | minmax
+leader_scale = 0.90           # leader sits at 90% of the rail
+position_floor = 0.08         # nobody is pinned to the gate
+minmax_enabled = false        # behind a flag, not the default
+
+[[race]]
+id = "gr8_cup"
+name = "The Gr8 Cup"
+blurb = "Total points by started players. The only race that decides anything."
+stat = "points_for"
+unit = "pts"
+direction = "high"
+featured = true
+
+[[race]]
+id = "sackmaster"
+name = "The Sackmaster Stakes"
+blurb = "Sacks from the two started IDP slots. Team defense runs in The Fortress Stakes."
+stat = "sacks"
+unit = "sacks"
+direction = "high"
+featured = true
+
+[[race]]
+id = "tackle_handicap"
+name = "The Thousand Tackle Handicap"
+blurb = "Solo tackles from the two started IDP slots. The grind race."
+stat = "solo_tackles"
+unit = "tkl"
+direction = "high"
+featured = false
+
+[[race]]
+id = "takeaway_derby"
+name = "The Takeaway Derby"
+blurb = "Interceptions, forced fumbles, and fumble recoveries from the two started IDP slots."
+stat = "takeaways"
+unit = "TA"
+direction = "high"
+featured = true
+
+[[race]]
+id = "fortress"
+name = "The Fortress Stakes"
+blurb = "Fantasy points from the started team defense, points-allowed tiers and all."
+stat = "defense_points"
+unit = "pts"
+direction = "high"
+featured = false
+
+[[race]]
+id = "airmail"
+name = "The Airmail Invitational"
+blurb = "Passing yards thrown by started quarterbacks."
+stat = "pass_yards"
+unit = "yds"
+direction = "high"
+featured = false
+
+[[race]]
+id = "ground_game"
+name = "The Ground Game Gold Cup"
+blurb = "Rushing yards from started running backs and anyone else who took a handoff."
+stat = "rush_yards"
+unit = "yds"
+direction = "high"
+featured = false
+
+[[race]]
+id = "red_zone"
+name = "The Red Zone Handicap"
+blurb = "Every touchdown scored by a started player, however it got there."
+stat = "touchdowns"
+unit = "TD"
+direction = "high"
+featured = false
+
+[[race]]
+id = "claiming_stakes"
+name = "The Claiming Stakes"
+blurb = "Total value over draft slot across the whole roster. Rewards the draft board and the waiver wire alike."
+stat = "value_over_slot"
+unit = "VOS"
+direction = "high"
+featured = true
+
+[[race]]
+id = "regret_steeplechase"
+name = "The Regret Steeplechase"
+blurb = "Points left on the bench. This is the one race you do not want to win."
+stat = "bench_regret"
+unit = "pts"
+direction = "low"
+featured = false

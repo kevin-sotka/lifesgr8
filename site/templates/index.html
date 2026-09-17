@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Life's Gr8 &middot; 2026</title>
+<meta name="description" content="The Life's Gr8 fantasy football league. Sixteen teams, IDP scoring, one racetrack.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1f5c3a" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14181a" media="(prefers-color-scheme: dark)">
+
+<meta property="og:title" content="Life's Gr8 &middot; 2026">
+<meta property="og:description" content="Sixteen teams, IDP scoring, one racetrack.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lifesgr8.com/">
+
+<link rel="icon" href="static/img/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="static/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="static/css/lifesgr8.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<div id="demo-banner" class="demo-banner" hidden>
+  <strong>Demo data.</strong>
+  <span>Every figure here was generated locally. Nothing on this page is a real result yet.</span>
+</div>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <a class="brand" href="#/">
+      <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+        <use href="#silk-glyph"></use>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-name">Life&rsquo;s Gr8</span>
+        <span class="brand-sub" id="brand-sub">2026 season</span>
+      </span>
+    </a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch colour theme">
+      <span class="theme-toggle-dot" aria-hidden="true"></span>
+      <span class="theme-toggle-label">Theme</span>
+    </button>
+  </div>
+  <nav class="tabs" aria-label="Sections">
+    <div class="wrap tabs-inner" id="tabs"></div>
+  </nav>
+</header>
+
+<main id="main" tabindex="-1">
+  <div class="wrap" id="view">
+    <div class="loading" role="status">
+      <span class="loading-rail"><span class="loading-runner"></span></span>
+      <p>Walking the horses to the gate&hellip;</p>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <p class="footer-built">
+      Built <span id="built-at">not yet</span>. The site regenerates daily; the recap
+      regenerates on Tuesdays.
+    </p>
+    <p class="footer-note">
+      Life&rsquo;s Gr8 &middot; 16 teams &middot; head to head &middot; custom IDP scoring.
+      Read only. This site has never written a single thing back to Yahoo.
+    </p>
+    <p class="footer-note">
+      League data from the Yahoo Fantasy Sports API. New-age stats from
+      <a href="https://github.com/nflverse">nflverse</a> play-by-play and
+      <a href="https://github.com/ffverse/ffopportunity">ffopportunity</a>.
+      Charting data provided by <a href="https://FTNFantasy.com/data">FTNFantasy.com/data</a>.
+    </p>
+  </div>
+</footer>
+
+<!-- Sprite. One definition, reused by every silk and every horse on the page. -->
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <defs>
+    <symbol id="silk-glyph" viewBox="0 0 40 40">
+      <path d="M20 4c-3.1 0-5.6.7-7.4 1.6L6 9.2l3.3 7 3-1.4V36h15.4V14.8l3 1.4 3.3-7-6.6-3.6C25.6 4.7 23.1 4 20 4Z"/>
+    </symbol>
+    <symbol id="horse" viewBox="0 0 68 44">
+      <!-- Racehorse and jockey, side on, mid gallop. Drawn as a small set of
+           solid shapes rather than one clever path, because it has to stay
+           readable at the 28px the lanes actually render it at.
+
+           The cap is painted with var(--band), which a lane sets to the surface
+           colour for a hooped stable and leaves unset for a solid one. Custom
+           properties inherit into a <use> shadow tree, so one symbol covers both
+           silks without a second copy. -->
+      <path d="M18 21C12.5 17.6 7.2 16.4 2 18.2c4 1.6 6.4 4.2 7.6 7.4 1 2.6 4.3 2.4 6.2-.2z"/>
+      <path d="M23.5 26.5c-2.4 4.6-6 8.4-10.8 10.8l2.6 3c5.4-2.6 9.6-6.8 12.2-11.6z"/>
+      <path d="M29.5 27.6c-.6 4.8-2.4 9.4-5.4 13.2l4 1.2c3.2-4 5.2-8.8 5.8-13.8z"/>
+      <path d="M40 24.5c3.4 4.2 7.6 7.6 12.4 9.8l-2.2 3.4c-5.4-2.4-10-6.2-13.6-11z"/>
+      <path d="M42.5 22c4.6 2.4 9.6 3.8 14.8 4l-.4 4c-5.8-.2-11.4-1.8-16.4-4.6z"/>
+      <path d="M17.5 21.5c0-5.4 5.6-8.8 13-8.8 7 0 12 3 12.8 8 .8 5-4.4 8.6-12.6 8.6-7.6 0-13.2-2.6-13.2-7.8z"/>
+      <path d="M37.8 18.6c3.6-4.8 8.6-9 14.4-12.2l4.2 4.6c-5 2.8-9.6 7-12.8 11.6z"/>
+      <path d="M51.6 4.2 61 6.2l4.4 4.2c.6.6.5 1.6-.3 2l-3.4 1.8c-.7.4-1.6.3-2.2-.2l-6.6-5.6z"/>
+      <path d="M53.4 4.6 52.6.4c-.1-.6.6-1 1-.5l2.6 3.2z"/>
+      <path d="M28.6 13.4c1.6-4.6 6.4-7.2 11-6l4.2 1.2-1.6 5.2-4-1.1c-2.4-.7-5 .5-6 2.8z"/>
+      <circle cx="27.5" cy="9.6" r="4.6"/>
+      <path d="M22.6 12.2c-1 1.8-.6 4 1 5.4l3.4-3.8z"/>
+      <!-- The rider's cap. A hooped stable rides in a light cap, a solid stable
+           in a matching one, which is how a real card tells two runners in the
+           same colours apart. Cutting bands through the horse itself was tried
+           and shredded the silhouette at lane size. -->
+      <circle cx="27.5" cy="9.6" r="4.6" fill="var(--band, transparent)"/>
+      <path fill="var(--band, transparent)" d="M22.6 12.2c-1 1.8-.6 4 1 5.4l3.4-3.8z"/>
+    </symbol>
+    <symbol id="chev" viewBox="0 0 12 12"><path d="M4 2.5 7.5 6 4 9.5"/></symbol>
+  </defs>
+</svg>
+
+<script src="static/js/core.js"></script>
+<script src="static/js/charts.js"></script>
+<script src="static/js/views.js"></script>
+<script src="static/js/app.js"></script>
+</body>
+</html>

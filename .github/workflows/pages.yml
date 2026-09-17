@@ -1,0 +1,154 @@
+name: Daily build of lifesgr8.com
+
+on:
+  schedule:
+    # 5:00am Pacific, every day. Cron runs in UTC and Pacific shifts an hour twice a
+    # year, so both candidates are scheduled and the gate below keeps the one that is
+    # actually 5am in Los Angeles today: 12:00 UTC in daylight time, 13:00 UTC in
+    # standard time. GitHub can start scheduled runs late under load; the gate keys
+    # on which schedule fired, not the clock, so a late start still counts.
+    - cron: "0 12 * * *"
+    - cron: "0 13 * * *"
+  push:
+    branches: [main]     # merging a recap pull request lands here and publishes it
+  workflow_dispatch:
+    inputs:
+      recap:
+        description: "Write this week's recap even if it is not Tuesday"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write        # push the recap branch
+  pull-requests: write   # open the recap pull request
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+    steps:
+      - name: Gate on 5am Pacific
+        id: gate
+        env:
+          EVENT: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+          RECAP_INPUT: ${{ inputs.recap }}
+        run: |
+          offset=$(TZ=America/Los_Angeles date +%z)          # -0700 daylight, -0800 standard
+          weekday=$(TZ=America/Los_Angeles date +%u)         # 2 is Tuesday
+          run=true
+          if [ "$EVENT" = "schedule" ]; then
+            if [ "$offset" = "-0700" ] && [ "$SCHEDULE" != "0 12 * * *" ]; then run=false; fi
+            if [ "$offset" = "-0800" ] && [ "$SCHEDULE" != "0 13 * * *" ]; then run=false; fi
+          fi
+          recap=false
+          if [ "$run" = "true" ] && [ "$EVENT" = "schedule" ] && [ "$weekday" = "2" ]; then recap=true; fi
+          if [ "$RECAP_INPUT" = "true" ]; then recap=true; fi
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+          echo "recap=$recap" >> "$GITHUB_OUTPUT"
+          echo "Pacific offset $offset, weekday $weekday, event $EVENT ($SCHEDULE): run=$run recap=$recap"
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.run == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Tests
+        if: steps.gate.outputs.run == 'true'
+        run: python3 -m unittest discover -s tests
+
+      # Raw Yahoo and nflverse snapshots persist between runs, so a finished week is
+      # fetched once. Losing the cache is harmless: everything is refetched.
+      - name: Restore raw snapshots
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            data/raw
+            data/ingest_state.json
+          key: raw-${{ github.run_id }}
+          restore-keys: raw-
+
+      - name: Ingest, snapshot, compute, build, validate, promote
+        if: steps.gate.outputs.run == 'true'
+        env:
+          YAHOO_CLIENT_ID: ${{ secrets.YAHOO_CLIENT_ID }}
+          YAHOO_CLIENT_SECRET: ${{ secrets.YAHOO_CLIENT_SECRET }}
+          YAHOO_REFRESH_TOKEN: ${{ secrets.YAHOO_REFRESH_TOKEN }}
+          YAHOO_REDIRECT_URI: oob
+          LEAGUE_ID: ${{ vars.LEAGUE_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # rate limit for nflverse release lookups
+        run: ./fantasy-api daily
+
+      - name: Tuesday recap, in Doc's voice
+        id: recap
+        if: steps.gate.outputs.run == 'true' && steps.gate.outputs.recap == 'true'
+        continue-on-error: true      # a failed recap never blocks the daily site
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DOC_VOICE_PROMPT: ${{ secrets.DOC_VOICE }}
+          LEAGUE_ID: ${{ vars.LEAGUE_ID }}
+          YAHOO_CLIENT_ID: ${{ secrets.YAHOO_CLIENT_ID }}
+          YAHOO_CLIENT_SECRET: ${{ secrets.YAHOO_CLIENT_SECRET }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ] || [ -z "$DOC_VOICE_PROMPT" ]; then
+            echo "::warning::Recap skipped: ANTHROPIC_API_KEY or DOC_VOICE secret is not set."
+            exit 0
+          fi
+          python3 -m pip install --quiet anthropic
+          ./fantasy-api recap
+
+      - name: Open the recap for review
+        if: steps.recap.outputs.recap_path != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RECAP: ${{ steps.recap.outputs.recap_path }}
+        run: |
+          auto=$(python3 -c "import sys; sys.path.insert(0,'src'); from fantasy_api.config import read_toml, LEAGUE_TOML; print(str(read_toml(LEAGUE_TOML).get('recaps',{}).get('auto_publish', False)).lower())")
+          week=$(python3 -c "import json;print(json.load(open('$RECAP'))['week'])")
+          git config user.name "Doc"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "$auto" = "true" ]; then
+            git add "$RECAP" && git commit -m "Week $week recap" && git push origin HEAD:main
+            ./fantasy-api compute && python3 tools/build_site.py all
+          else
+            branch="recap/week-$week"
+            git checkout -b "$branch"
+            git add "$RECAP" && git commit -m "Week $week recap, for review"
+            git push --force origin "$branch"
+            body=$(python3 -c "
+          import json; r = json.load(open('$RECAP'))
+          print('## ' + r['headline'] + '\n\n' + r['lede'] + '\n\n' + '\n\n'.join(r['paragraphs']))
+          print('\n---\nMerge to publish. Edit the file on this branch first if anything needs fixing. Every number was checked against the league facts before this was opened.')")
+            gh pr create --base main --head "$branch" --title "Week $week recap from Doc" --body "$body" \
+              || echo "A pull request for $branch already exists."
+          fi
+
+      - uses: actions/configure-pages@v5
+        if: steps.gate.outputs.run == 'true'
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.gate.outputs.run == 'true'
+        with:
+          path: site/dist
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

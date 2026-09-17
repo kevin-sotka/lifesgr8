@@ -1,0 +1,53 @@
+# The weekly new-age stat headline. DATA, not code.
+#
+# One stat headlines The Card each week, rotating in the order listed here and
+# repeating through the season: headline = stat[(completed_week - 1) % count].
+# All four are computed in Python from nflverse data. Minimums scale with weeks
+# played, so a Week 1 leader and a Week 12 leader both had to earn it. Rates are
+# shown raw and ranked by value, then by volume, so 8 for 8 beats 6 for 6. Players
+# on the same value share a rank.
+
+[[stat]]
+id = "poe"
+name = "Points Over Expected"
+short = "POE/G"
+unit = "pts per game"
+format = "signed"
+blurb = "Actual fantasy points minus what a player's volume should have produced, scored with Life's Gr8's own settings. High means efficient, or lucky. Low means due."
+how = "Expected points come from the ffopportunity model, which prices every target and carry by where it happened on the field. Both sides are rescored with this league's modifiers, yardage bonuses excluded from both."
+source = "ffopportunity (ffverse)"
+min_expected_per_game = 6.0
+
+[[stat]]
+id = "first_read"
+name = "First Read Share"
+short = "1st Read %"
+unit = "of targets"
+format = "percent"
+blurb = "The share of a receiver's targets that came as his quarterback's first read. The alpha stat: who the offense is built to find before anything else happens."
+how = "FTN charting codes every target by the progression read it came on. Counted over charted targets only; checkdowns, designed throws, and scramble drills count as not first read."
+source = "FTN charting via nflverse. Charting data provided by FTNFantasy.com/data"
+min_targets_per_week = 6
+
+[[stat]]
+id = "explosive_run"
+name = "Explosive Run Rate"
+short = "Exp Run %"
+unit = "of carries"
+format = "percent"
+blurb = "The share of a player's designed carries that gained 15 yards or more. Big-play consistency, without one 80-yard fluke carrying a season's yards per carry."
+how = "From nflverse play-by-play. Designed runs only: kneels, scrambles, and two-point tries are excluded."
+source = "nflverse play-by-play"
+min_carries_per_week = 8
+explosive_yards = 15
+
+[[stat]]
+id = "rz_share"
+name = "Red Zone Opportunity Share"
+short = "RZ Opp %"
+unit = "of team RZ looks"
+format = "percent"
+blurb = "The share of his team's red zone targets and carries a player commands inside the 20. The role that turns into touchdowns before the touchdowns show up."
+how = "From nflverse play-by-play: targets plus designed carries with the ball at or inside the opponent's 20, divided by the team's total. Two-point tries, kneels, and sacks excluded."
+source = "nflverse play-by-play"
+min_opportunities_per_week = 3

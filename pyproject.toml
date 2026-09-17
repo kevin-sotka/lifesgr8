@@ -1,0 +1,18 @@
+[project]
+name = "fantasy-api"
+version = "0.1.0"
+description = "Read-only Yahoo fantasy football pipeline and static site for Life's Gr8"
+# CLAUDE.md targets 3.12. The code sticks to the standard library and 3.9
+# syntax so it also runs on the interpreter macOS ships with.
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+fantasy-api = "fantasy_api.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

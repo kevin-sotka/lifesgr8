@@ -1,0 +1,82 @@
+{
+ "team:1": {
+  "code": "LHO",
+  "hue": 0,
+  "pattern": 0
+ },
+ "team:10": {
+  "code": "SIS",
+  "hue": 1,
+  "pattern": 1
+ },
+ "team:11": {
+  "code": "STR",
+  "hue": 2,
+  "pattern": 1
+ },
+ "team:12": {
+  "code": "WAR",
+  "hue": 3,
+  "pattern": 1
+ },
+ "team:13": {
+  "code": "WEB",
+  "hue": 4,
+  "pattern": 1
+ },
+ "team:14": {
+  "code": "DVA",
+  "hue": 5,
+  "pattern": 1
+ },
+ "team:15": {
+  "code": "ZIH",
+  "hue": 6,
+  "pattern": 1
+ },
+ "team:16": {
+  "code": "SHY",
+  "hue": 7,
+  "pattern": 1
+ },
+ "team:2": {
+  "code": "AEI",
+  "hue": 1,
+  "pattern": 0
+ },
+ "team:3": {
+  "code": "DEA",
+  "hue": 2,
+  "pattern": 0
+ },
+ "team:4": {
+  "code": "ERE",
+  "hue": 3,
+  "pattern": 0
+ },
+ "team:5": {
+  "code": "HAW",
+  "hue": 4,
+  "pattern": 0
+ },
+ "team:6": {
+  "code": "JAT",
+  "hue": 5,
+  "pattern": 0
+ },
+ "team:7": {
+  "code": "JRO",
+  "hue": 6,
+  "pattern": 0
+ },
+ "team:8": {
+  "code": "JBT",
+  "hue": 7,
+  "pattern": 0
+ },
+ "team:9": {
+  "code": "NUB",
+  "hue": 0,
+  "pattern": 1
+ }
+}

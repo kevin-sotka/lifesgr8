@@ -1,0 +1,33 @@
+# Yahoo snapshots and the local database. Raw responses are large and the
+# database is rebuildable from them, so neither belongs in git.
+data/raw/
+data/league.db
+data/ingest_state.json
+data/*.db-journal
+
+# Build artifacts. The site is regenerated, never edited, so nothing that comes
+# out of the build is tracked.
+site/build/
+site/dist/
+site/dist.previous/
+
+# compute writes these every run; CI regenerates them from Yahoo.
+site/static/data/*.json
+
+# Doc's character sheet is private IP. CI reads it from the DOC_VOICE secret.
+docs/doc_voice.md
+
+# Secrets. The token file holds the Yahoo refresh token.
+.env
+data/.yahoo_tokens.json
+data/.yahoo_tokens.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+
+# macOS
+.DS_Store

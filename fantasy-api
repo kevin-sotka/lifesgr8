@@ -1,0 +1,4 @@
+#!/bin/sh
+# Runs the CLI straight from src/ so there is nothing to install first.
+here="$(cd "$(dirname "$0")" && pwd)"
+PYTHONPATH="$here/src${PYTHONPATH:+:$PYTHONPATH}" exec python3 -m fantasy_api.cli "$@"
