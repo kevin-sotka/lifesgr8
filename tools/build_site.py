@@ -208,6 +208,13 @@ def validate():
                     if board.get("format") == "percent":
                         check(0 <= row["value"] <= 1, "new-age %s has a share outside 0 to 1" % sid)
 
+        if "draft" in payload and league.get("source") == "yahoo":
+            # An empty baseline prices every pick at zero and publishes raw points as
+            # value over slot, which looks plausible and is wrong.
+            base = payload["draft"].get("baseline", {})
+            check(base.get("historical_picks", 0) > 0,
+                  "draft value baseline has no historical picks; run ./fantasy-api backfill")
+
         if "recaps" in payload:
             # Zero recaps is legitimate: a drafted recap stays off the site until it has
             # been read. Anything that is listed must be published and complete.

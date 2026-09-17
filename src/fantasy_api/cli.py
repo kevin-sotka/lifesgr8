@@ -407,6 +407,11 @@ def cmd_daily(args: argparse.Namespace) -> int:
     if run(*ingest):
         print("daily stopped at ingest. Nothing was promoted.", file=sys.stderr)
         return 1
+    # Prior drafts feed the draft value baseline. Finished seasons never change, so
+    # once they are on disk (or restored from the CI cache) this costs nothing.
+    if not any(RAW.glob("league_*_player_stats_season")) and run("backfill"):
+        print("daily stopped at backfill. Nothing was promoted.", file=sys.stderr)
+        return 1
     if run("nflverse"):
         print("continuing with the nflverse files already on disk", file=sys.stderr)
     for stage in ("snapshot", "compute"):
