@@ -16,10 +16,10 @@
   "position": "LB",
   "points": 14.5
  },
- "most_points_left_on_bench": {
+ "worst_lineup_of_the_week": {
   "team": "Zihuatanejo",
-  "points": 33.55,
-  "best_benched_player": {
+  "points_a_better_lineup_would_have_added": 33.55,
+  "best_player_left_on_the_bench": {
    "name": "T.J. Watt",
    "position": "LB,DE",
    "points": 21.0
@@ -65,8 +65,8 @@
      "position": "RB",
      "points": 5.7
     },
-    "points_left_on_bench": 19.72,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 19.72,
+    "best_player_left_on_the_bench": {
      "name": "Jacoby Brissett",
      "position": "QB",
      "points": 21.24
@@ -90,8 +90,8 @@
      "position": "K",
      "points": 1.0
     },
-    "points_left_on_bench": 23.25,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 23.25,
+    "best_player_left_on_the_bench": {
      "name": "Jalen Coker",
      "position": "WR",
      "points": 27.1
@@ -120,8 +120,8 @@
      "position": "TE",
      "points": 0.0
     },
-    "points_left_on_bench": 16.35,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 16.35,
+    "best_player_left_on_the_bench": {
      "name": "Cam Ward",
      "position": "QB",
      "points": 13.65
@@ -145,8 +145,8 @@
      "position": "LB,DE",
      "points": 0.0
     },
-    "points_left_on_bench": 21.15,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 21.15,
+    "best_player_left_on_the_bench": {
      "name": "Malik Willis",
      "position": "QB",
      "points": 16.15
@@ -174,8 +174,8 @@
      "position": "TE",
      "points": 1.45
     },
-    "points_left_on_bench": 33.55,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 33.55,
+    "best_player_left_on_the_bench": {
      "name": "T.J. Watt",
      "position": "LB,DE",
      "points": 21.0
@@ -199,8 +199,8 @@
      "position": "DEF",
      "points": 0.0
     },
-    "points_left_on_bench": 20.62,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 20.62,
+    "best_player_left_on_the_bench": {
      "name": "Aaron Rodgers",
      "position": "QB",
      "points": 16.27
@@ -228,8 +228,8 @@
      "position": "WR",
      "points": 0.5
     },
-    "points_left_on_bench": 5.2,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 5.2,
+    "best_player_left_on_the_bench": {
      "name": "Samaje Perine",
      "position": "RB",
      "points": 4.7
@@ -253,8 +253,8 @@
      "position": "WR",
      "points": 1.65
     },
-    "points_left_on_bench": 8.55,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 8.55,
+    "best_player_left_on_the_bench": {
      "name": "T.J. Hockenson",
      "position": "TE",
      "points": 9.4
@@ -282,8 +282,8 @@
      "position": "WR",
      "points": 0.6
     },
-    "points_left_on_bench": 11.8,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 11.8,
+    "best_player_left_on_the_bench": {
      "name": "Jacory Croskey-Merritt",
      "position": "RB",
      "points": 12.4
@@ -307,8 +307,8 @@
      "position": "TE",
      "points": 0.0
     },
-    "points_left_on_bench": 14.25,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 14.25,
+    "best_player_left_on_the_bench": {
      "name": "Deebo Samuel Sr.",
      "position": "WR",
      "points": 11.6
@@ -336,8 +336,8 @@
      "position": "WR",
      "points": 0.0
     },
-    "points_left_on_bench": 12.05,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 12.05,
+    "best_player_left_on_the_bench": {
      "name": "Tyler Shough",
      "position": "QB",
      "points": 35.2
@@ -361,8 +361,8 @@
      "position": "TE",
      "points": 2.5
     },
-    "points_left_on_bench": 30.19,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 30.19,
+    "best_player_left_on_the_bench": {
      "name": "Bryce Young",
      "position": "QB",
      "points": 35.52
@@ -390,8 +390,8 @@
      "position": "WR",
      "points": 1.5
     },
-    "points_left_on_bench": 14.4,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 14.4,
+    "best_player_left_on_the_bench": {
      "name": "Baker Mayfield",
      "position": "QB",
      "points": 16.02
@@ -415,8 +415,8 @@
      "position": "WR",
      "points": 0.0
     },
-    "points_left_on_bench": 18.1,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 18.1,
+    "best_player_left_on_the_bench": {
      "name": "Fred Warner",
      "position": "LB",
      "points": 11.0
@@ -444,8 +444,8 @@
      "position": "WR",
      "points": 0.0
     },
-    "points_left_on_bench": 30.25,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 30.25,
+    "best_player_left_on_the_bench": {
      "name": "Chiefs",
      "position": "DEF",
      "points": 23.0
@@ -469,8 +469,8 @@
      "position": "WR",
      "points": 1.35
     },
-    "points_left_on_bench": 23.17,
-    "best_benched_player": {
+    "points_a_better_lineup_would_have_added": 23.17,
+    "best_player_left_on_the_bench": {
      "name": "Jordan Love",
      "position": "QB",
      "points": 21.14

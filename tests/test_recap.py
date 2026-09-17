@@ -56,11 +56,18 @@ class Checks(unittest.TestCase):
         d["lede"] += " Whoa — rein 'em in."
         self.assertTrue(any("dash" in p for p in recap.check(d, FACTS, MANAGERS)))
 
+    def test_numbers_must_belong_to_the_matchup_being_written_about(self):
+        d = good_draft()
+        other = FACTS["matchups"][5]["winner"]["points"]        # a real score, wrong game
+        d["paragraphs"][0] += " They even hung %s on the board somehow." % other
+        problems = recap.check(d, FACTS, MANAGERS)
+        self.assertTrue(any("do not belong to it" in p for p in problems), problems)
+
     def test_invented_numbers_are_rejected_rounded_ones_allowed(self):
         d = good_draft()
         d["paragraphs"][0] += " Henry went for 36.4 and hauled in 777 yards of gold dust."
         problems = recap.check(d, FACTS, MANAGERS)
-        self.assertTrue(any("777" in p and "not in the facts" in p for p in problems), problems)
+        self.assertTrue(any("777" in p and "do not belong" in p for p in problems), problems)
         self.assertFalse(any("36.4" in p for p in problems))   # 36.35 rounded is fine
 
     def test_years_are_rejected_even_when_digits_match_a_score(self):

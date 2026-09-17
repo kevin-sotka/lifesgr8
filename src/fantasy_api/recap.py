@@ -93,8 +93,11 @@ def facts(conn: sqlite3.Connection, league_key: str, week: int,
                 "streak_after": run(i),
                 "top_starter": player(row["best_starter"]),
                 "worst_starter": player(row["worst_starter"]),
-                "points_left_on_bench": round(row["regret"], 2),
-                "best_benched_player": player(row["best_bench"]),
+                # These two are different numbers and the difference matters: starting the
+                # benched player would have benched somebody else, so the lineup cost is
+                # usually smaller than the benched player's own score.
+                "points_a_better_lineup_would_have_added": round(row["regret"], 2),
+                "best_player_left_on_the_bench": player(row["best_bench"]),
             }
 
         matchups.append({"winner": side(a), "loser": side(b), "margin": margin,
@@ -117,9 +120,9 @@ def facts(conn: sqlite3.Connection, league_key: str, week: int,
         "week_low": {"team": name(lo), "points": round(scores[lo], 2)},
         "best_idp_performance": ({"team": name(idp["team_index"]), **player(idp["best_idp"])}
                                  if idp else None),
-        "most_points_left_on_bench": {"team": name(regret["team_index"]),
-                                      "points": round(regret["regret"], 2),
-                                      "best_benched_player": player(regret["best_bench"])},
+        "worst_lineup_of_the_week": {"team": name(regret["team_index"]),
+                                     "points_a_better_lineup_would_have_added": round(regret["regret"], 2),
+                                     "best_player_left_on_the_bench": player(regret["best_bench"])},
         "unbeaten_teams": unbeaten, "winless_teams": winless,
         "matchups": matchups,
     }
@@ -153,6 +156,10 @@ facts. You may round fantasy points to one decimal. Do not write years, ages, or
 number, even in a joke or a story ("a fella I knew in '24" is out).
 2. Never invent a statistic, a player, a nickname, a quote, a rivalry, or any league \
 history. If it is not in the facts, it did not happen.
+2b. Numbers belong to the game you are writing about. Use a matchup's own numbers in its \
+own paragraph. "points_a_better_lineup_would_have_added" is what a better lineup was worth, \
+and it is smaller than "best_player_left_on_the_bench" because starting that player would \
+have benched someone else. Do not mix the two into one figure.
 3. Refer to teams only by their team names, exactly as written in the facts. Name no real \
 people except the NFL players listed in the facts.
 4. Losing badly, benching points, and bad lineups are fair game. Nothing outside the game is.
@@ -295,10 +302,22 @@ def check(draft: Dict[str, Any], fact: Dict[str, Any], forbidden_names: List[str
             "\"paragraphs\" has %d entries; there are %d matchups, so it needs exactly %d. "
             "A closing line to the league goes in \"sign_off\", not in \"paragraphs\"."
             % (len(draft.get("paragraphs", [])), len(fact["matchups"]), len(fact["matchups"]))),
-    ok = allowed_numbers(fact)
-    bad = sorted({tok for tok in NUMBER.findall(text) if _norm(float(tok)) not in ok})
-    if bad:
-        problems.append("It uses numbers that are not in the facts: %s." % ", ".join(bad))
+    # Numbers are checked against the facts for the game being written about, not the
+    # whole week. Otherwise one matchup's score vouches for a wrong number in another.
+    week_wide = {k: v for k, v in fact.items() if k != "matchups"}
+    shared = allowed_numbers(week_wide)
+    everywhere = allowed_numbers(fact)
+    for label, part, allowed in (
+            [("the headline", draft.get("headline", ""), everywhere),
+             ("the lede", draft.get("lede", ""), everywhere),
+             ("the sign off", draft.get("sign_off", ""), everywhere)]
+            + [("matchup paragraph %d" % (i + 1), para,
+                shared | allowed_numbers(fact["matchups"][i]))
+               for i, para in enumerate(draft.get("paragraphs", [])[:len(fact["matchups"])])]):
+        bad = sorted({tok for tok in NUMBER.findall(part) if _norm(float(tok)) not in allowed})
+        if bad:
+            problems.append("%s uses numbers that do not belong to it: %s."
+                            % (label[0].upper() + label[1:], ", ".join(bad)))
     # Rounding means a point total can vouch for almost any small whole number, so
     # years get their own check: "in '24" or "back in 2019" are never in the facts.
     years = sorted(set(re.findall(r"['\u2018\u2019](\d{2})\b", text)) |
