@@ -316,7 +316,11 @@ class Season:
         self.completed = [w for w in sorted(self.matchups)
                           if self.matchups[w] and all(m["status"] == "postevent" for m in self.matchups[w])]
         self.completed_week = self.completed[-1] if self.completed else 0
-        self.current_week = int(self.league["current_week"] or (self.completed_week + 1))
+        # Settings are fetched once per season, so the stored current week goes stale.
+        # It can never be behind the week after the last one Yahoo has finished.
+        self.current_week = max(int(self.league["current_week"] or 0), self.completed_week + 1)
+        if self.league["end_week"]:
+            self.current_week = min(self.current_week, int(self.league["end_week"]))
 
         self.roster = defaultdict(lambda: defaultdict(list))   # week -> team_index -> rows
         for r in rows(conn, "SELECT * FROM rosters WHERE league_key=?", (league_key,)):

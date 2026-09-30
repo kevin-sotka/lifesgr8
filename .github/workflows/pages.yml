@@ -17,6 +17,10 @@ on:
         description: "Write this week's recap even if it is not Tuesday"
         type: boolean
         default: false
+      week:
+        description: "Recap for this week number instead of the latest finished one (catch-up)"
+        type: string
+        default: ""
 
 permissions:
   contents: write        # push the recap branch
@@ -100,13 +104,14 @@ jobs:
           LEAGUE_ID: ${{ vars.LEAGUE_ID }}
           YAHOO_CLIENT_ID: ${{ secrets.YAHOO_CLIENT_ID }}
           YAHOO_CLIENT_SECRET: ${{ secrets.YAHOO_CLIENT_SECRET }}
+          RECAP_WEEK: ${{ inputs.week }}
         run: |
           if [ -z "$ANTHROPIC_API_KEY" ] || [ -z "$DOC_VOICE_PROMPT" ]; then
             echo "::warning::Recap skipped: ANTHROPIC_API_KEY or DOC_VOICE secret is not set."
             exit 0
           fi
           python3 -m pip install --quiet anthropic
-          ./fantasy-api recap
+          ./fantasy-api recap ${RECAP_WEEK:+--week "$RECAP_WEEK"}
 
       - name: Open the recap for review
         if: steps.recap.outputs.recap_path != ''
