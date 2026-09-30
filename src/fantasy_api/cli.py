@@ -301,6 +301,11 @@ def cmd_snapshot(args: argparse.Namespace) -> int:
     from . import snapshot
     league_key = _current_league_key()
     conn = snapshot.build(league_key)
+    for week, lines in sorted(snapshot.adopt_yahoo_points(conn, league_key).items()):
+        print("note week %d: %d player scores differ from our scoring, using Yahoo's"
+              % (week, len(lines)))
+        for line in lines[: (None if args.verbose else 3)]:
+            print("     " + line)
     problems = snapshot.verify(conn, league_key)
     ends = snapshot.week_ends(conn, league_key)
     today = date.today()

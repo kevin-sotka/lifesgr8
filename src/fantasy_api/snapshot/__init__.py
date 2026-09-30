@@ -376,6 +376,31 @@ def build(league_key: str, raw: Path = RAW, db_path: Path = DB_PATH) -> sqlite3.
     return conn
 
 
+def adopt_yahoo_points(conn: sqlite3.Connection, league_key: str,
+                       tolerance: float = 0.011) -> Dict[int, List[str]]:
+    """
+    Where our scoring disagrees with Yahoo's per-player total, Yahoo wins.
+
+    Yahoo awards points that its own stat lines do not account for, so our rescoring
+    cannot reproduce every figure. Yahoo's number is what decided each matchup, so it
+    is the one the site shows. Returns the disagreements by week so they are logged.
+    """
+    adopted: Dict[int, List[str]] = {}
+    with conn:
+        for r in conn.execute("""SELECT s.week, s.player_key, p.name, s.points, s.yahoo_points
+                                 FROM player_week_stats s LEFT JOIN players p USING (player_key)
+                                 WHERE s.league_key=? AND s.yahoo_points IS NOT NULL
+                                   AND ABS(s.points - s.yahoo_points) > ?""",
+                              (league_key, tolerance)).fetchall():
+            adopted.setdefault(r["week"], []).append(
+                "%s (%s): computed %.2f, using Yahoo %.2f"
+                % (r["name"], r["player_key"], r["points"], r["yahoo_points"]))
+        conn.execute("""UPDATE player_week_stats SET points=yahoo_points
+                        WHERE league_key=? AND yahoo_points IS NOT NULL
+                          AND ABS(points - yahoo_points) > ?""", (league_key, tolerance))
+    return adopted
+
+
 def verify(conn: sqlite3.Connection, league_key: str,
            tolerance: float = 0.011) -> Dict[int, List[str]]:
     """
